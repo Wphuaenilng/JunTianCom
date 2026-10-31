@@ -15,12 +15,14 @@ const siteDir = join(scriptDir, ".."); // studio-site/
 const repoRoot = join(siteDir, ".."); // 仓库根
 const dataFile = join(siteDir, "src", "data", "checkins.json");
 const dryRun = process.argv.includes("--dry-run");
+// 结果/错误文件必须写进工作流的 RUNNER_TEMP,供后续 gh 评论步骤读取
+const outDir = process.env.RUNNER_TEMP ?? tmpdir();
 
 function fail(message) {
   if (dryRun) {
     console.error(`[dry-run] 校验失败：${message}`);
   } else {
-    writeFileSync(join(tmpdir(), "checkin-error.txt"), `⚠️ 打卡未能记录：${message}\n\n请点开 issue 编辑内容后重新提交（注意「今天学了什么」必须填写，日期格式为 YYYY-MM-DD 且不晚于今天）。`);
+    writeFileSync(join(outDir, "checkin-error.txt"), `⚠️ 打卡未能记录：${message}\n\n请点开 issue 编辑内容后重新提交（注意「今天学了什么」必须填写，日期格式为 YYYY-MM-DD 且不晚于今天）。`);
   }
   process.exit(1);
 }
@@ -100,7 +102,7 @@ const unchanged = before === readFileSync(dataFile, "utf8");
 
 const summary = `${date} · ${merged.join("、")}`;
 if (unchanged) {
-  writeFileSync(join(tmpdir(), "checkin-result.txt"), `✅ 该日打卡内容已在记录中，数据无变化：${summary}`);
+  writeFileSync(join(outDir, "checkin-result.txt"), `✅ 该日打卡内容已在记录中，数据无变化：${summary}`);
 } else {
   const git = (args) => execFileSync("git", args, { cwd: repoRoot });
   git(["config", "user.name", "github-actions[bot]"]);
@@ -108,5 +110,5 @@ if (unchanged) {
   git(["add", "studio-site/src/data/checkins.json"]);
   git(["commit", "-m", `checkin: ${summary}`]);
   git(["push"]);
-  writeFileSync(join(tmpdir(), "checkin-result.txt"), `✅ 打卡已记录：${summary}\n\n热力图数据已更新，随下次部署展示到网站。`);
+  writeFileSync(join(outDir, "checkin-result.txt"), `✅ 打卡已记录：${summary}\n\n热力图数据已更新，随下次部署展示到网站。`);
 }
