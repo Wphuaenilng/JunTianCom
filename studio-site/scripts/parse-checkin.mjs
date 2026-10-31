@@ -29,7 +29,7 @@ function todayInShanghai() {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Shanghai" }).format(new Date());
 }
 
-/** GitHub issue forms 的 body 是「### 标题\n\n值」的重复结构，空值为 _No response_ */
+/** GitHub issue forms 的 body 是「### 标题\n\n值」的重复结构，空值为 _No response_；无标题结构时返回 null（手动打卡格式） */
 function parseFormSections(body) {
   const sections = {};
   const re = /^### (.+)$/gm;
@@ -38,7 +38,7 @@ function parseFormSections(body) {
   while ((m = re.exec(body)) !== null) {
     heads.push({ name: m[1].trim(), start: m.index, valueStart: m.index + m[0].length });
   }
-  if (heads.length === 0) fail("表单内容为空");
+  if (heads.length === 0) return null;
   for (let i = 0; i < heads.length; i++) {
     const end = i + 1 < heads.length ? heads[i + 1].start : undefined;
     sections[heads[i].name] = body.slice(heads[i].valueStart, end).trim();
@@ -46,22 +46,38 @@ function parseFormSections(body) {
   return sections;
 }
 
-const sections = parseFormSections(process.env.ISSUE_BODY ?? "");
+const body = process.env.ISSUE_BODY ?? "";
+const title = process.env.ISSUE_TITLE ?? "";
+const sections = parseFormSections(body);
 
-const rawDate = (sections["日期"] ?? "").replace(/^_No response_$/, "").trim();
-const date = rawDate === "" ? todayInShanghai() : rawDate;
+let date;
+let topics;
+
+if (sections) {
+  const rawDate = (sections["日期"] ?? "").replace(/^_No response_$/, "").trim();
+  date = rawDate === "" ? todayInShanghai() : rawDate;
+  topics = (sections["今天学了什么"] ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[-*]\s+/, "").trim())
+    .filter((line) => line !== "" && line !== "_No response_");
+  if (topics.length === 0) fail("「今天学了什么」为空");
+} else {
+  // 手动兜底格式：标题「打卡 2026-10-31」可选带日期，正文每行一个学习主题
+  const m = title.match(/\d{4}-\d{2}-\d{2}/);
+  date = m ? m[0] : todayInShanghai();
+  topics = body
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^[-*]\s+/, "").trim())
+    .filter(Boolean);
+  if (topics.length === 0) fail("正文为空：请在 issue 正文里每行写一个学习主题（标题需以「打卡」开头）");
+}
+
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00+08:00`))) {
-  fail(`日期「${rawDate}」格式不对，应为 YYYY-MM-DD`);
+  fail(`日期「${date}」格式不对，应为 YYYY-MM-DD`);
 }
 if (date > todayInShanghai()) {
   fail(`日期「${date}」晚于今天`);
 }
-
-const topics = (sections["今天学了什么"] ?? "")
-  .split(/\r?\n/)
-  .map((line) => line.replace(/^[-*]\s+/, "").trim())
-  .filter((line) => line !== "" && line !== "_No response_");
-if (topics.length === 0) fail("「今天学了什么」为空");
 
 const data = JSON.parse(readFileSync(dataFile, "utf8"));
 data.checkins ??= [];

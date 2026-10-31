@@ -15,7 +15,7 @@ concurrency:
 jobs:
   record:
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, '打卡')
+    if: startsWith(github.event.issue.title, '打卡') || contains(github.event.issue.labels.*.name, '打卡')
     steps:
       - uses: actions/checkout@v4
 
@@ -27,6 +27,7 @@ jobs:
         id: parse
         env:
           ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: node studio-site/scripts/parse-checkin.mjs
 
       - name: 关闭 issue 并确认

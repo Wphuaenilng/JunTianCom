@@ -1,7 +1,6 @@
 name: 打卡
 description: 记录今天的学习——提交后机器人会自动写入热力图数据
 title: "打卡"
-labels: ["打卡"]
 body:
   - type: input
     id: date
