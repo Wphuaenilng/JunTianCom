@@ -1,3 +1,11 @@
 {
-  "checkins": []
+  "checkins": [
+    {
+      "date": "2026-10-31",
+      "topics": [
+        "GitHub Issue 打卡系统",
+        "热力图接入真实数据"
+      ]
+    }
+  ]
 }
