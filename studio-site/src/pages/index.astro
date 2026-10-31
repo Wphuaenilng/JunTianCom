@@ -1,0 +1,152 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import ProductCard from "../components/ProductCard.astro";
+import PostCard from "../components/PostCard.astro";
+import Heatmap from "../components/Heatmap.astro";
+import CtaBand from "../components/CtaBand.astro";
+import HeroTitle from "../components/vue/HeroTitle.vue";
+import HeroStats from "../components/vue/HeroStats.vue";
+import HeroShape from "../components/vue/HeroShape.vue";
+import EditorCard from "../components/vue/EditorCard.vue";
+import AnimatedContent from "../components/vue/bits/AnimatedContent.vue";
+import { SITE } from "../data/site";
+import { buildHeatmap } from "../lib/heatmap";
+
+const products = (await getCollection("products")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const featuredProducts = products
+  .filter((p) => p.data.status === "online")
+  .slice(0, 3);
+const latestPosts = [...posts]
+  .sort((a, b) => Number(b.data.pinned) - Number(a.data.pinned))
+  .slice(0, 4);
+
+const heatDays = buildHeatmap(42, 26);
+
+const heroStats = [
+  { value: products.length, label: "上线 / 在建产品" },
+  { value: posts.length, label: "篇文章" },
+  { value: 1.2, decimals: 1, suffix: "k", label: "GitHub Stars" },
+  { value: SITE.stats.streakDays, label: "天连续学习" },
+];
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE.name,
+  url: SITE.url,
+  description: SITE.description,
+  author: { "@type": "Person", name: SITE.author },
+};
+---
+
+<Base title={SITE.title} path="/" jsonld={jsonld}>
+  <!-- Hero -->
+  <section class="hero">
+    <HeroShape client:load />
+    <div class="hero-in">
+      <div>
+        <span class="hero-badge reveal">
+          <Icon name="lucide:sparkles" />
+          独立开发 · 持续学习 · <b>已连续记录 {SITE.stats.streakDays} 天</b>
+        </span>
+        <HeroTitle client:load />
+        <p class="lead reveal" style="--reveal-delay:120ms">
+          你好，我是{SITE.author}（{SITE.authorEn}）。这里是我的数字花园：展示我在做的产品，记录我正在学的东西，也分享一路踩过的坑。
+        </p>
+        <div class="hero-cta reveal" style="--reveal-delay:180ms">
+          <a class="btn primary" href="/products/">
+            浏览我的产品 <Icon name="lucide:arrow-right" />
+          </a>
+          <a class="btn ghost" href="/learning/">看看我在学什么</a>
+        </div>
+        <HeroStats client:load stats={heroStats} />
+      </div>
+      <div class="editor-wrap reveal" style="--reveal-delay:150ms">
+        <EditorCard client:load />
+        <div class="float-chip c1"><Icon name="lucide:zap" />本周 commit ×12</div>
+        <div class="float-chip c2"><Icon name="lucide:boxes" />{products.length} 个产品在线</div>
+        <div class="float-chip c3"><Icon name="lucide:flask-conical" />RAG 调优中…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选产品 -->
+  <section class="section">
+    <SectionHead
+      title="精选产品"
+      sub="我做过的东西：从微信小程序到开源库"
+      href="/products/"
+      more="全部产品"
+    />
+    <div class="grid-3">
+      {featuredProducts.map((p) => <ProductCard product={p} />)}
+    </div>
+  </section>
+
+  <!-- 最新文章 -->
+  <section class="section" style="padding-top:8px">
+    <SectionHead
+      title="最新文章"
+      sub="教程 · 工具 · AI · 复盘，每周至少更新一篇"
+      href="/blog/"
+      more="全部文章"
+    />
+    <div class="grid-2">
+      {latestPosts.map((p) => <PostCard post={p} variant="home" />)}
+    </div>
+  </section>
+
+  <!-- 学习动态 -->
+  <section class="section" style="padding-top:8px">
+    <SectionHead
+      title="学习动态"
+      sub="像 GitHub 一样，让坚持可见"
+      href="/learning/"
+      more="学习记录"
+    />
+    <AnimatedContent client:visible :distance="40" :duration="0.8">
+      <div class="learn-strip">
+      <div class="learn-top">
+        <h3><Icon name="lucide:flame" />近半年学习热力图</h3>
+        <span class="streak"><Icon name="lucide:flame" />{SITE.learning.streak}</span>
+      </div>
+      <Heatmap days={heatDays} />
+      <div class="heat-foot">
+        <span>少</span>
+        <div class="legend"><i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i></div>
+        <span>多</span>
+        <span style="margin-left:auto">本周在学习：<b style="color:var(--text)">{SITE.learning.weekTopics}</b></span>
+      </div>
+      </div>
+    </AnimatedContent>
+  </section>
+
+  <!-- CTA -->
+  <CtaBand
+    title="有想法？一起做点东西。"
+    text="项目合作、技术咨询，或者只是聊聊独立开发 —— 都欢迎。"
+    href="/about/#coop"
+    cta="联系我"
+  />
+</Base>
+
+<script>
+  // 编辑器卡翻面时，让三个浮动徽章抖一下（监听 EditorCard 派发的事件）
+  const chips = document.querySelectorAll<HTMLElement>(".editor-wrap .float-chip");
+  document.addEventListener("editor:flip", () => {
+    chips.forEach((chip, i) => {
+      chip.classList.remove("chip-jolt");
+      void chip.offsetWidth; // 强制重排以重启动画
+      setTimeout(() => chip.classList.add("chip-jolt"), i * 70);
+    });
+  });
+</script>

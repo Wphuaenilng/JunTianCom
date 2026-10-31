@@ -1,0 +1,17 @@
+---
+import type { HeatDay } from "../lib/heatmap";
+
+interface Props {
+  days: HeatDay[];
+  compact?: boolean;
+}
+const { days, compact = false } = Astro.props;
+---
+
+<div
+  class:list={["heatmap", { compact }]}
+  role="img"
+  aria-label="学习活跃度热力图"
+>
+  {days.map((d) => <i class={d.level ? `l${d.level}` : undefined} title={d.label} />)}
+</div>

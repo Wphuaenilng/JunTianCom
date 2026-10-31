@@ -1,0 +1,42 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import Base from "../../../layouts/Base.astro";
+import PostCard from "../../../components/PostCard.astro";
+import { tagSlug } from "../../../lib/tags";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({
+    params: { tag: tagSlug(tag) },
+    props: {
+      tag,
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<Base
+  title={`标签：${tag} · 星屿工作室`}
+  description={`标签「${tag}」下的全部文章，共 ${posts.length} 篇。`}
+  path={`/blog/tags/${tagSlug(tag)}/`}
+>
+  <div class="page-head">
+    <h1 style="display:flex;align-items:center;gap:10px">
+      <Icon name="lucide:tag" style="width:24px;height:24px;color:var(--primary)" />{tag}
+    </h1>
+    <p>共 {posts.length} 篇文章 · <a href="/blog/" style="color:var(--primary)">返回全部文章</a></p>
+  </div>
+
+  <section class="section" style="padding-top:20px">
+    <div class="post-list" style="max-width:720px">
+      {posts.map((p) => <PostCard post={p} variant="blog" />)}
+    </div>
+  </section>
+</Base>

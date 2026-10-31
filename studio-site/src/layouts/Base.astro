@@ -1,0 +1,101 @@
+---
+import "@fontsource-variable/sora";
+import "../styles/global.css";
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE } from "../data/site";
+
+interface Props {
+  title: string;
+  description?: string;
+  path?: string;
+  type?: "website" | "article";
+  jsonld?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.name}
+      href="/rss.xml"
+    />
+    <!-- 主题初始化：先于首帧执行，避免明暗闪屏 -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("starisle-theme");
+          var prefersLight =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: light)").matches;
+          document.documentElement.dataset.theme =
+            stored || (prefersLight ? "light" : "dark");
+          var accent = localStorage.getItem("starisle-accent");
+          if (accent) document.documentElement.dataset.accent = accent;
+          document.documentElement.classList.add("js");
+        } catch (e) {
+          document.documentElement.dataset.theme = "dark";
+        }
+      })();
+    </script>
+    <BaseHead {...props} />
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<script>
+  // 首屏铺满：把导航实际高度写入 --nav-h，供 .hero 计算 min-height
+  const nav = document.querySelector(".site-nav");
+  if (nav) {
+    const setNavHeight = () =>
+      document.documentElement.style.setProperty(
+        "--nav-h",
+        `${Math.round(nav.getBoundingClientRect().height)}px`,
+      );
+    setNavHeight();
+    new ResizeObserver(setNavHeight).observe(nav);
+
+    // deepseek 式导航：下滑后变形为悬浮胶囊，回顶部恢复完整长条
+    const onNavScroll = () => {
+      nav.classList.toggle("nav-condensed", window.scrollY > 80);
+    };
+    window.addEventListener("scroll", onNavScroll, { passive: true });
+    onNavScroll();
+  }
+
+  // 滚动渐显：进入视口的 .reveal 元素加 .revealed；
+  // 减少动效用户直接全部显示。无 JS 时 CSS 不隐藏任何内容。
+  const revealEls = document.querySelectorAll<HTMLElement>(".reveal");
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const el of revealEls) el.classList.add("revealed");
+  } else if (revealEls.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
+    );
+    for (const el of revealEls) io.observe(el);
+  }
+</script>

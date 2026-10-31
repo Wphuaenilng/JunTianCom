@@ -1,0 +1,74 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Heatmap from "../components/Heatmap.astro";
+import RoadmapCard from "../components/RoadmapCard.astro";
+import WeekNote from "../components/WeekNote.astro";
+import { ROADMAP, READING } from "../data/roadmap";
+import { SITE } from "../data/site";
+import { buildHeatmap } from "../lib/heatmap";
+
+const notes = (await getCollection("learning")).sort(
+  (a, b) => b.data.week - a.data.week,
+);
+const heatDays = buildHeatmap(42, 18);
+---
+
+<Base
+  title={`学习记录 · 星屿工作室`}
+  description="学以致用：每条路线都对应一个真实产品或一篇文章，用输出倒逼输入。"
+  path="/learning/"
+>
+  <div class="page-head reveal">
+    <h1>学习记录</h1>
+    <p>学以致用：每条路线都对应一个真实产品或一篇文章，用输出倒逼输入。</p>
+  </div>
+
+  <section class="section" style="padding-top:10px">
+    <div class="learn-grid">
+      <div>
+        <div class="sub-head reveal" style="margin-top:0">
+          <Icon name="lucide:target" />2026 学习路线
+        </div>
+        <div class="road">
+          {ROADMAP.map((item) => <RoadmapCard item={item} />)}
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="side-card reveal">
+          <h4><Icon name="lucide:flame" />打卡数据</h4>
+          <Heatmap days={heatDays} compact />
+          <div class="row" style="padding:10px 0 0;border-bottom:none">
+            <span>连续打卡</span><b>{SITE.stats.streakDays} 天</b>
+          </div>
+          <div class="row" style="padding:8px 0 0;border-bottom:none">
+            <span>本年累计</span><b>1,842 次</b>
+          </div>
+        </div>
+        <div class="side-card reveal">
+          <h4><Icon name="lucide:book-open" />正在读的书</h4>
+          {
+            READING.map((b) => (
+              <div class="book">
+                <span class="bic" style={`background:${b.grad}`}>
+                  <Icon name={`lucide:${b.icon}`} />
+                </span>
+                <div>
+                  <b>{b.title}</b>
+                  <span>{b.progress}</span>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+
+    <div class="sub-head reveal"><Icon name="lucide:pen-line" />学习周记</div>
+    <div style="max-width:720px">
+      {notes.map((note) => <WeekNote note={note} />)}
+    </div>
+  </section>
+</Base>

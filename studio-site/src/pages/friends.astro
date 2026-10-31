@@ -1,0 +1,61 @@
+---
+import { Icon } from "astro-icon/components";
+import Base from "../layouts/Base.astro";
+import { SITE } from "../data/site";
+
+const friends = [
+  {
+    name: "Astro 官方博客",
+    desc: "本站所用框架的官方博客，内容站技术方案的灵感来源。",
+    href: "https://astro.build/blog/",
+    icon: "layout-template",
+  },
+  {
+    name: "示例友链 A",
+    desc: "占位卡片：替换为你的朋友 / 常逛的站点。",
+    href: "#",
+    icon: "link",
+  },
+  {
+    name: "示例友链 B",
+    desc: "占位卡片：申请方式见下方说明。",
+    href: "#",
+    icon: "link",
+  },
+];
+---
+
+<Base
+  title={`友链 · 星屿工作室`}
+  description="朋友们的主页与常逛的站点，以及友链申请方式。"
+  path="/friends/"
+>
+  <div class="page-head reveal">
+    <h1>友链</h1>
+    <p>朋友们的主页与常逛的站点。</p>
+  </div>
+
+  <section class="section" style="padding-top:20px">
+    <div class="grid-3">
+      {
+        friends.map((f) => (
+          <a class="friend-card reveal" href={f.href} target="_blank" rel="noopener">
+            <span class="ic">
+              <Icon name={`lucide:${f.icon}`} />
+            </span>
+            <b>{f.name}</b>
+            <span>{f.desc}</span>
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="side-card" style="max-width:560px;margin-top:32px">
+      <h4><Icon name="lucide:mail" />申请友链</h4>
+      <p style="font-size:13px;color:var(--muted)">
+        发邮件到 <a href={`mailto:${SITE.email}`} style="color:var(--primary)">{SITE.email}</a>
+        ，附上站点名称、链接、一句话介绍和图标即可。只交换原创内容站，会不定期互访。
+      </p>
+    </div>
+  </section>
+</Base>

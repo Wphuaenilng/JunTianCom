@@ -1,0 +1,50 @@
+---
+import { Icon } from "astro-icon/components";
+import { SITE, NAV, SOCIALS } from "../data/site";
+---
+
+<footer class="site-footer" id="contact">
+  <div class="footer-in">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="font-size:15px">
+          <span class="mark"><Icon name="lucide:orbit" /></span>
+          <span>{SITE.name}<small>{SITE.latin}</small></span>
+        </div>
+        <p>把想法做成产品，把学习写成文章。一个普通开发者的数字花园。</p>
+        <div class="socials">
+          {
+            SOCIALS.map((s) => (
+              <a
+                href={s.href}
+                aria-label={s.name}
+                target={s.href.startsWith("http") ? "_blank" : undefined}
+                rel={s.href.startsWith("http") ? "noopener" : undefined}
+              >
+                <Icon name={`lucide:${s.icon}`} />
+              </a>
+            ))
+          }
+        </div>
+      </div>
+      <div>
+        <h4>站内导航</h4>
+        <div class="links">
+          {NAV.map((item) => <a href={item.href}>{item.text}</a>)}
+        </div>
+      </div>
+      <div>
+        <h4>更多</h4>
+        <div class="links">
+          <a href="/rss.xml">RSS 订阅</a>
+          <a href="/friends/">友链</a>
+          <a href={SITE.github} target="_blank" rel="noopener">网站源码 (GitHub)</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {new Date().getFullYear()} {SITE.name} · 用 Astro 构建 · 托管于 Vercel</span>
+      <span>示例品牌信息，替换为你的即可</span>
+    </div>
+  </div>
+</footer>

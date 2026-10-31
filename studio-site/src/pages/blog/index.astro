@@ -1,0 +1,97 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import BlogBrowser from "../../components/vue/BlogBrowser.vue";
+import { gradientCss } from "../../lib/theme";
+import { formatDate, readingMinutes } from "../../lib/utils";
+import { tagSlug } from "../../lib/tags";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const featured = posts.find((p) => p.data.pinned) ?? posts[0];
+const rest = posts.filter((p) => p.id !== featured.id);
+
+/** 传给 Vue 岛的轻量文章数据（可序列化，服务端渲染完整列表保证 SEO） */
+const toLite = (p: (typeof posts)[number]) => ({
+  id: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  category: p.data.category,
+  tags: p.data.tags,
+  date: formatDate(p.data.pubDate),
+  minutes: readingMinutes(p.body),
+  pinned: p.data.pinned,
+  cover: gradientCss(p.data.cover),
+  icon: p.data.icon ?? "file-text",
+});
+const featuredLite = toLite(featured);
+const restLites = rest.map(toLite);
+
+// 侧栏：分类计数与标签云（构建期计算）
+const categoryCounts = new Map<string, number>();
+for (const p of posts) {
+  categoryCounts.set(p.data.category, (categoryCounts.get(p.data.category) ?? 0) + 1);
+}
+const categories = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]);
+
+const tagCounts = new Map<string, number>();
+for (const p of posts) {
+  for (const t of p.data.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+}
+const topTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 9);
+const allCategories = ["全部", ...categories.map(([c]) => c)];
+---
+
+<Base
+  title={`博客 · 星屿工作室`}
+  description="写给自己，也写给搜索到这里的人。每篇都力求解决一个具体问题。"
+  path="/blog/"
+>
+  <div class="page-head reveal">
+    <h1>博客</h1>
+    <p>写给自己，也写给搜索到这里的人。每篇都力求解决一个具体问题。</p>
+  </div>
+
+  <section class="section" style="padding-top:6px">
+    <div class="blog-layout">
+      <div>
+        <BlogBrowser
+          client:load
+          posts={restLites}
+          featured={featuredLite}
+          categories={allCategories}
+        />
+      </div>
+
+      <aside class="side">
+        <div class="side-card reveal">
+          <h4><Icon name="lucide:archive" />分类</h4>
+          {
+            categories.map(([c, n]) => (
+              <div class="row">
+                <span>{c}</span>
+                <b>{n}</b>
+              </div>
+            ))
+          }
+        </div>
+        <div class="side-card reveal">
+          <h4><Icon name="lucide:tag" />标签</h4>
+          <div class="tagcloud">
+            {topTags.map(([t]) => <a class="tag" href={`/blog/tags/${tagSlug(t)}/`}>{t}</a>)}
+          </div>
+        </div>
+        <div class="side-card reveal">
+          <h4><Icon name="lucide:rss" />订阅</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a href="/rss.xml" style="font-size:13px;color:var(--primary)">RSS 订阅全部文章</a>
+            <span style="font-size:12px;color:var(--muted)">每周日晚更新，欢迎用 RSS 阅读器追更。</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>

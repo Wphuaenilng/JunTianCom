@@ -1,0 +1,43 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import CtaBand from "../../components/CtaBand.astro";
+
+const products = (await getCollection("products")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const online = products.filter((p) => p.data.status === "online");
+const building = products.filter((p) => p.data.status !== "online");
+---
+
+<Base
+  title={`产品 · ${"星屿工作室"}`}
+  description="我独立或主导开发的产品与开源项目。每一个都从真实需求出发，能被真实的人使用。"
+  path="/products/"
+>
+  <div class="page-head reveal">
+    <h1>产品</h1>
+    <p>我独立或主导开发的产品与开源项目。每一个都从真实需求出发，能被真实的人使用。</p>
+  </div>
+
+  <section class="section" style="padding-top:26px">
+    <div class="sub-head reveal"><Icon name="lucide:rocket" />在线产品</div>
+    <div class="grid-3">
+      {online.map((p) => <ProductCard product={p} />)}
+    </div>
+
+    <div class="sub-head reveal"><Icon name="lucide:flask-conical" />在建与内测</div>
+    <div class="grid-3">
+      {building.map((p) => <ProductCard product={p} />)}
+    </div>
+  </section>
+
+  <CtaBand
+    title="想看某个产品是怎么做出来的？"
+    text="每个产品都有一篇从 0 到 1 的复盘文章。"
+    href="/blog/"
+    cta="去看复盘"
+  />
+</Base>

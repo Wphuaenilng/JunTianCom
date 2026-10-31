@@ -1,0 +1,21 @@
+# 依赖
+studio-site/node_modules/
+
+# 构建产物（部署平台会重新构建）
+studio-site/dist/
+
+# Astro 生成
+studio-site/.astro/
+
+# 临时文件与日志
+studio-site/.tmp-*
+*.log
+
+# 环境变量（模板保留）
+.env
+.env.*
+!.env.example
+
+# OS
+Thumbs.db
+.DS_Store

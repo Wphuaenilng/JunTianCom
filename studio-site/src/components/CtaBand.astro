@@ -1,0 +1,35 @@
+---
+import { Icon } from "astro-icon/components";
+import AuroraCta from "./vue/AuroraCta.vue";
+import StarBorder from "./vue/bits/StarBorder.vue";
+
+interface Props {
+  title: string;
+  text: string;
+  href: string;
+  cta: string;
+}
+const { title, text, href, cta } = Astro.props;
+---
+
+<div class="cta reveal">
+  <div class="cta-in">
+    <AuroraCta client:visible />
+    <div>
+      <h3>{title}</h3>
+      <p>{text}</p>
+    </div>
+    <StarBorder
+      client:visible
+      as="a"
+      href={href}
+      color="var(--cyan)"
+      speed="5s"
+      custom-class="relative"
+      inner-class="bg-white text-slate-900 text-[14px] font-semibold inline-flex items-center gap-2 shadow-sm"
+    >
+      {cta}
+      <Icon name="lucide:arrow-right" />
+    </StarBorder>
+  </div>
+</div>

@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作室官网 · 设计稿 v1.0</title>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+</head>
+<body style="margin:0;padding:24px;background:#888">
+<div id="starisle-mock" data-theme="dark">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+#starisle-mock{
+  --p-bg:#0a0e16; --p-bg2:#0d1422; --p-surface:#101827; --p-card:#131c2e;
+  --p-border:rgba(148,163,184,.14); --p-border-strong:rgba(148,163,184,.28);
+  --p-text:#e7ecf5; --p-muted:#8b95ab;
+  --p-primary:#6d7cff; --p-primary-fg:#ffffff; --p-cyan:#38d9f5;
+  --p-green:#34d399; --p-amber:#fbbf24; --p-purple:#c084fc; --p-red:#f87171;
+  --p-grad:linear-gradient(120deg,#6d7cff 0%,#38d9f5 100%);
+  --p-shadow:0 10px 30px rgba(2,6,17,.45);
+  --p-font-display:'Sora','Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  --p-font-body:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  font-family:var(--p-font-body); color:var(--p-text); font-size:14px; line-height:1.6;
+}
+#starisle-mock[data-theme="light"]{
+  --p-bg:#f5f7fb; --p-bg2:#eaeef6; --p-surface:#ffffff; --p-card:#ffffff;
+  --p-border:rgba(15,23,42,.09); --p-border-strong:rgba(15,23,42,.18);
+  --p-text:#0f1729; --p-muted:#5b6478;
+  --p-primary:#4f46e5; --p-primary-fg:#ffffff; --p-cyan:#0891b2;
+  --p-green:#059669; --p-amber:#d97706; --p-purple:#9333ea;
+  --p-shadow:0 10px 30px rgba(15,23,42,.10);
+}
+#starisle-mock *{box-sizing:border-box;margin:0;padding:0}
+#starisle-mock button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+#starisle-mock a{color:inherit;text-decoration:none}
+#starisle-mock svg{display:block}
+
+/* ---------- 设计稿工具条（评审用，非产品本身） ---------- */
+.sm-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--p-border);border-radius:12px;background:var(--p-surface);margin-bottom:14px}
+.sm-meta-brand{display:flex;align-items:center;gap:8px;font-family:var(--p-font-display);font-weight:600;font-size:13px}
+.sm-meta-brand .dot{width:9px;height:9px;border-radius:50%;background:var(--p-grad)}
+.sm-meta .ver{font-size:11px;color:var(--p-muted);border:1px solid var(--p-border);padding:1px 8px;border-radius:99px}
+.sm-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:0 auto}
+.sm-tab{padding:6px 14px;border-radius:9px;color:var(--p-muted);font-weight:500;transition:.15s}
+.sm-tab:hover{color:var(--p-text);background:var(--p-bg2)}
+.sm-tab[aria-pressed="true"]{color:var(--p-primary-fg);background:var(--p-primary)}
+.sm-iconbtn{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;border:1px solid var(--p-border);color:var(--p-muted);transition:.15s}
+.sm-iconbtn:hover{color:var(--p-text);border-color:var(--p-border-strong)}
+.sm-iconbtn svg{width:16px;height:16px}
+.sm-theme-ic .ic-sun{display:none}
+#starisle-mock[data-theme="light"] .sm-theme-ic .ic-sun{display:block}
+#starisle-mock[data-theme="light"] .sm-theme-ic .ic-moon{display:none}
+
+/* ---------- 浏览器窗口框 ---------- */
+.sm-window{max-width:1180px;margin:0 auto;border:1px solid var(--p-border-strong);border-radius:16px;overflow:hidden;background:var(--p-bg);box-shadow:var(--p-shadow)}
+.sm-chrome{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--p-surface);border-bottom:1px solid var(--p-border)}
+.sm-chrome .dots{display:flex;gap:6px}
+.sm-chrome .dots i{width:10px;height:10px;border-radius:50%;background:var(--p-border-strong)}
+.sm-chrome .dots i:first-child{background:#f87171}.sm-chrome .dots i:nth-child(2){background:#fbbf24}.sm-chrome .dots i:last-child{background:#34d399}
+.sm-url{flex:1;max-width:340px;margin:0 auto;display:flex;align-items:center;gap:6px;justify-content:center;background:var(--p-bg2);border:1px solid var(--p-border);border-radius:8px;padding:3px 12px;font-size:12px;color:var(--p-muted)}
+.sm-url svg{width:11px;height:11px}
+
+/* ---------- 站点导航 ---------- */
+.sm-site{background:var(--p-bg)}
+.sm-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:22px;padding:14px 28px;background:color-mix(in srgb,var(--p-bg) 82%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--p-border)}
+.sm-logo{display:flex;align-items:center;gap:9px;font-family:var(--p-font-display);font-weight:700;font-size:16px}
+.sm-logo .mark{width:28px;height:28px;border-radius:9px;background:var(--p-grad);display:flex;align-items:center;justify-content:center;color:#fff}
+.sm-logo .mark svg{width:15px;height:15px}
+.sm-logo small{display:block;font-size:10px;font-weight:500;color:var(--p-muted);letter-spacing:.14em}
+.sm-nav-links{display:flex;gap:4px;margin-left:8px}
+.sm-nav-links button{padding:7px 13px;border-radius:9px;color:var(--p-muted);font-weight:500}
+.sm-nav-links button:hover{color:var(--p-text)}
+.sm-nav-links button.active{color:var(--p-text);background:var(--p-bg2)}
+.sm-nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sm-nav-right .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--p-muted)}
+.sm-nav-right .ic:hover{color:var(--p-text);background:var(--p-bg2)}
+.sm-nav-right .ic svg{width:17px;height:17px}
+.sm-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;font-weight:500;border:1px solid var(--p-border);transition:.15s}
+.sm-btn svg{width:15px;height:15px}
+.sm-btn.primary{background:var(--p-primary);color:var(--p-primary-fg);border-color:transparent}
+.sm-btn.primary:hover{filter:brightness(1.1)}
+.sm-btn.ghost:hover{border-color:var(--p-border-strong)}
+.sm-menu{display:none}
+@media (max-width:860px){
+  .sm-nav-links{display:none}
+  .sm-menu{display:flex}
+  .sm-nav{padding:12px 18px;gap:12px}
+}
+
+/* ---------- Hero ---------- */
+.sm-hero{position:relative;overflow:hidden;padding:72px 48px 64px;border-bottom:1px solid var(--p-border)}
+.sm-hero::before{content:"";position:absolute;inset:-40%;background:
+  radial-gradient(560px 320px at 18% 12%,color-mix(in srgb,var(--p-primary) 22%,transparent),transparent 62%),
+  radial-gradient(520px 300px at 82% 78%,color-mix(in srgb,var(--p-cyan) 15%,transparent),transparent 62%);
+  pointer-events:none}
+.sm-hero-in{position:relative;max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1.06fr .94fr;gap:48px;align-items:center}
+.sm-hero-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--p-muted);border:1px solid var(--p-border);border-radius:99px;padding:5px 13px;background:var(--p-surface)}
+.sm-hero-badge b{color:var(--p-green);font-weight:500}
+.sm-hero-badge svg{width:13px;height:13px;color:var(--p-green)}
+.sm-hero h1{font-family:var(--p-font-display);font-size:clamp(28px,4.2vw,44px);font-weight:700;line-height:1.22;margin:18px 0 14px;letter-spacing:-.01em}
+.sm-hero h1 .grad{background:var(--p-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sm-hero p.lead{color:var(--p-muted);font-size:15px;max-width:480px}
+.sm-hero-cta{display:flex;gap:12px;margin:26px 0 30px;flex-wrap:wrap}
+.sm-stats{display:flex;gap:34px;flex-wrap:wrap}
+.sm-stat b{display:block;font-family:var(--p-font-display);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.sm-stat span{font-size:12px;color:var(--p-muted)}
+/* hero 右侧编辑器卡 */
+.sm-editor-wrap{position:relative}
+.sm-editor{position:relative;background:var(--p-surface);border:1px solid var(--p-border-strong);border-radius:14px;box-shadow:var(--p-shadow);overflow:hidden;font-family:'Sora','JetBrains Mono',Consolas,monospace}
+.sm-editor .ed-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--p-border)}
+.sm-editor .ed-bar i{width:9px;height:9px;border-radius:50%;background:var(--p-border-strong)}
+.sm-editor .ed-bar .fname{margin-left:6px;font-size:11px;color:var(--p-muted)}
+.sm-editor pre{padding:18px;font-size:12.5px;line-height:1.75;overflow-x:auto;font-family:inherit}
+.sm-editor .tk-k{color:var(--p-purple)}.sm-editor .tk-s{color:var(--p-green)}
+.sm-editor .tk-f{color:var(--p-cyan)}.sm-editor .tk-c{color:var(--p-muted)}
+.sm-editor .tk-p{color:var(--p-primary)}
+.sm-chip{position:absolute;display:flex;align-items:center;gap:7px;background:var(--p-surface);border:1px solid var(--p-border-strong);border-radius:10px;padding:7px 12px;font-size:12px;box-shadow:var(--p-shadow)}
+.sm-chip svg{width:14px;height:14px;color:var(--p-primary)}
+.sm-chip.c1{top:-16px;right:8%}
+.sm-chip.c2{bottom:-14px;left:-6%}
+.sm-chip.c3{top:38%;right:-5%}
+@media (max-width:920px){
+  .sm-hero{padding:48px 22px}
+  .sm-hero-in{grid-template-columns:1fr;gap:40px}
+  .sm-chip.c3{right:2%}
+  .sm-chip.c2{left:2%}
+}
+
+/* ---------- 通用区块 ---------- */
+.sm-section{max-width:1120px;margin:0 auto;padding:56px 48px}
+@media (max-width:920px){.sm-section{padding:44px 22px}}
+.sm-sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:26px}
+.sm-sec-head h2{font-family:var(--p-font-display);font-size:24px;font-weight:700;letter-spacing:-.01em}
+.sm-sec-head p{color:var(--p-muted);font-size:13px;margin-top:5px}
+.sm-sec-head .more{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--p-primary);font-weight:500;white-space:nowrap}
+.sm-sec-head .more svg{width:14px;height:14px}
+.sm-tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--p-muted);border:1px solid var(--p-border);border-radius:99px;padding:2px 10px}
+.sm-tag.hot{color:var(--p-primary);border-color:color-mix(in srgb,var(--p-primary) 40%,transparent);background:color-mix(in srgb,var(--p-primary) 10%,transparent)}
+
+/* 产品卡 */
+.sm-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.sm-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media (max-width:920px){.sm-grid-3,.sm-grid-2{grid-template-columns:1fr}}
+.sm-card{background:var(--p-card);border:1px solid var(--p-border);border-radius:14px;overflow:hidden;transition:.18s;display:flex;flex-direction:column}
+.sm-card:hover{transform:translateY(-3px);border-color:var(--p-border-strong);box-shadow:var(--p-shadow)}
+.sm-cover{height:120px;display:flex;align-items:center;justify-content:center;position:relative}
+.sm-cover .big-ic{width:52px;height:52px;border-radius:14px;background:color-mix(in srgb,#fff 88%,transparent);display:flex;align-items:center;justify-content:center;color:#1e293b;box-shadow:0 6px 16px rgba(2,6,17,.25)}
+.sm-cover .big-ic svg{width:26px;height:26px}
+.sm-status{position:absolute;top:10px;right:10px;font-size:11px;padding:2px 9px;border-radius:99px;font-weight:500}
+.sm-status.on{background:color-mix(in srgb,var(--p-green) 16%,transparent);color:var(--p-green)}
+.sm-status.dev{background:color-mix(in srgb,var(--p-amber) 16%,transparent);color:var(--p-amber)}
+.sm-status.beta{background:color-mix(in srgb,var(--p-purple) 16%,transparent);color:var(--p-purple)}
+.sm-card-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:9px;flex:1}
+.sm-card-body h3{font-family:var(--p-font-display);font-size:15.5px;font-weight:600}
+.sm-card-body .desc{font-size:13px;color:var(--p-muted);flex:1}
+.sm-chips{display:flex;gap:6px;flex-wrap:wrap}
+.sm-chip-tag{font-size:11px;color:var(--p-muted);background:var(--p-bg2);border-radius:6px;padding:2px 8px}
+.sm-card-meta{display:flex;align-items:center;gap:14px;border-top:1px solid var(--p-border);padding-top:11px;font-size:12px;color:var(--p-muted)}
+.sm-card-meta span,.sm-card-meta a{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.sm-card-meta svg{width:13px;height:13px;flex:none}
+
+/* 文章卡 */
+.sm-post{display:flex;flex-direction:column;gap:9px;background:var(--p-card);border:1px solid var(--p-border);border-radius:14px;padding:18px 20px;transition:.18s}
+.sm-post:hover{border-color:var(--p-border-strong);transform:translateY(-2px)}
+.sm-post .top{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--p-muted)}
+.sm-post h3{font-family:var(--p-font-display);font-size:15.5px;font-weight:600;line-height:1.45}
+.sm-post p{font-size:13px;color:var(--p-muted)}
+.sm-post .bottom{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--p-muted);margin-top:auto}
+.sm-post .bottom span{display:inline-flex;align-items:center;gap:5px}
+.sm-post .bottom svg{width:13px;height:13px}
+
+/* 学习动态条 */
+.sm-learn-strip{background:var(--p-card);border:1px solid var(--p-border);border-radius:16px;padding:22px 24px}
+.sm-learn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sm-learn-top h3{font-family:var(--p-font-display);font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.sm-learn-top h3 svg{width:16px;height:16px;color:var(--p-primary)}
+.sm-streak{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--p-amber)}
+.sm-streak svg{width:14px;height:14px}
+.sm-heatmap{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);gap:3px;justify-content:start;overflow-x:auto;padding-bottom:4px}
+.sm-heatmap i{width:11px;height:11px;border-radius:3px;background:var(--p-bg2)}
+.sm-heatmap.compact{grid-template-rows:repeat(7,9px);gap:2px;overflow-x:visible;padding-bottom:0}
+.sm-heatmap.compact i{width:9px;height:9px;border-radius:2px}
+.sm-heatmap i.l1{background:color-mix(in srgb,var(--p-primary) 28%,transparent)}
+.sm-heatmap i.l2{background:color-mix(in srgb,var(--p-primary) 50%,transparent)}
+.sm-heatmap i.l3{background:color-mix(in srgb,var(--p-primary) 74%,transparent)}
+.sm-heatmap i.l4{background:var(--p-primary)}
+.sm-heat-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:11.5px;color:var(--p-muted)}
+.sm-legend{display:flex;align-items:center;gap:3px}
+.sm-legend i{width:10px;height:10px;border-radius:3px;background:var(--p-bg2)}
+.sm-legend i.l1{background:color-mix(in srgb,var(--p-primary) 28%,transparent)}
+.sm-legend i.l2{background:color-mix(in srgb,var(--p-primary) 50%,transparent)}
+.sm-legend i.l3{background:color-mix(in srgb,var(--p-primary) 74%,transparent)}
+.sm-legend i.l4{background:var(--p-primary)}
+
+/* CTA 带 */
+.sm-cta{max-width:1120px;margin:0 auto 56px;padding:0 48px}
+@media (max-width:920px){.sm-cta{padding:0 22px}}
+.sm-cta-in{position:relative;overflow:hidden;background:var(--p-grad);border-radius:18px;padding:38px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.sm-cta-in::after{content:"";position:absolute;inset:0;background:radial-gradient(400px 180px at 85% 20%,rgba(255,255,255,.28),transparent 60%)}
+.sm-cta-in h3{position:relative;font-family:var(--p-font-display);color:#fff;font-size:22px;font-weight:700}
+.sm-cta-in p{position:relative;color:rgba(255,255,255,.85);font-size:13.5px;margin-top:5px}
+.sm-cta-in .sm-btn{position:relative;background:#fff;color:#1e293b;border:none;font-weight:600}
+
+/* 页脚 */
+.sm-foot{border-top:1px solid var(--p-border);background:var(--p-surface)}
+.sm-foot-in{max-width:1120px;margin:0 auto;padding:44px 48px 22px}
+@media (max-width:920px){.sm-foot-in{padding:36px 22px 18px}}
+.sm-foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px}
+@media (max-width:920px){.sm-foot-grid{grid-template-columns:1fr}}
+.sm-foot h4{font-size:13px;font-weight:600;margin-bottom:12px}
+.sm-foot .links{display:flex;flex-direction:column;gap:8px}
+.sm-foot .links a,.sm-foot .links button{font-size:13px;color:var(--p-muted);text-align:left;padding:0}
+.sm-foot .links a:hover,.sm-foot .links button:hover{color:var(--p-text)}
+.sm-foot-brand p{font-size:13px;color:var(--p-muted);margin:12px 0 16px;max-width:300px}
+.sm-socials{display:flex;gap:8px}
+.sm-socials a{width:32px;height:32px;border:1px solid var(--p-border);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--p-muted)}
+.sm-socials a:hover{color:var(--p-text);border-color:var(--p-border-strong)}
+.sm-socials svg{width:15px;height:15px}
+.sm-foot-bottom{margin-top:34px;padding-top:16px;border-top:1px solid var(--p-border);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--p-muted)}
+
+/* ---------- 产品页 ---------- */
+.sm-page-head{padding:52px 48px 8px;max-width:1120px;margin:0 auto}
+@media (max-width:920px){.sm-page-head{padding:40px 22px 6px}}
+.sm-page-head h1{font-family:var(--p-font-display);font-size:30px;font-weight:700;letter-spacing:-.01em}
+.sm-page-head>p{color:var(--p-muted);margin-top:8px;max-width:560px}
+.sm-sub-head{font-family:var(--p-font-display);font-size:17px;font-weight:600;margin:38px 0 16px;display:flex;align-items:center;gap:8px}
+.sm-sub-head svg{width:16px;height:16px;color:var(--p-primary)}
+
+/* ---------- 博客页 ---------- */
+.sm-blog-layout{display:grid;grid-template-columns:1fr 280px;gap:28px;align-items:start}
+@media (max-width:920px){.sm-blog-layout{grid-template-columns:1fr}}
+.sm-filter{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 22px}
+.sm-pill{padding:6px 15px;border-radius:99px;font-size:13px;color:var(--p-muted);border:1px solid var(--p-border);background:var(--p-card)}
+.sm-pill.active{background:var(--p-primary);color:var(--p-primary-fg);border-color:transparent}
+.sm-feature{display:grid;grid-template-columns:1.1fr 1fr;background:var(--p-card);border:1px solid var(--p-border);border-radius:16px;overflow:hidden;margin-bottom:20px}
+.sm-feature .fcov{min-height:190px;display:flex;align-items:center;justify-content:center}
+.sm-feature .fcov .big-ic{width:60px;height:60px;border-radius:16px;background:color-mix(in srgb,#fff 88%,transparent);display:flex;align-items:center;justify-content:center;color:#1e293b}
+.sm-feature .fcov .big-ic svg{width:30px;height:30px}
+.sm-feature .fbody{padding:22px 24px;display:flex;flex-direction:column;gap:10px}
+.sm-feature .fbody h3{font-family:var(--p-font-display);font-size:19px;font-weight:700;line-height:1.4}
+.sm-feature .fbody p{font-size:13.5px;color:var(--p-muted)}
+@media (max-width:920px){.sm-feature{grid-template-columns:1fr}}
+.sm-side{display:flex;flex-direction:column;gap:18px}
+.sm-side-card{background:var(--p-card);border:1px solid var(--p-border);border-radius:14px;padding:18px 20px}
+.sm-side-card h4{font-size:13.5px;font-weight:600;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+.sm-side-card h4 svg{width:14px;height:14px;color:var(--p-primary)}
+.sm-side-card .row{display:flex;justify-content:space-between;font-size:13px;color:var(--p-muted);padding:6px 0;border-bottom:1px dashed var(--p-border)}
+.sm-side-card .row:last-child{border-bottom:none}
+.sm-side-card .row b{color:var(--p-text);font-weight:500;font-variant-numeric:tabular-nums}
+.sm-tagcloud{display:flex;gap:7px;flex-wrap:wrap}
+.sm-search{display:flex;align-items:center;gap:9px;background:var(--p-card);border:1px solid var(--p-border);border-radius:11px;padding:9px 14px;color:var(--p-muted)}
+.sm-search svg{width:15px;height:15px;flex:none}
+.sm-search input{flex:1;background:none;border:none;outline:none;color:var(--p-text);font-family:inherit;font-size:13.5px;min-width:0}
+.sm-search input::placeholder{color:var(--p-muted)}
+
+/* ---------- 学习记录页 ---------- */
+.sm-road{display:flex;flex-direction:column;gap:16px}
+.sm-road-card{background:var(--p-card);border:1px solid var(--p-border);border-radius:14px;padding:20px 22px}
+.sm-road-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.sm-road-top h3{font-family:var(--p-font-display);font-size:15.5px;font-weight:600;display:flex;align-items:center;gap:9px}
+.sm-road-top h3 .ric{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.sm-road-top h3 .ric svg{width:15px;height:15px}
+.sm-road-top .pct{font-family:var(--p-font-display);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;color:var(--p-primary)}
+.sm-bar{height:7px;border-radius:99px;background:var(--p-bg2);overflow:hidden;margin:10px 0 12px}
+.sm-bar span{display:block;height:100%;border-radius:99px;background:var(--p-grad)}
+.sm-mile{display:flex;flex-direction:column;gap:6px}
+.sm-mile span{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--p-muted)}
+.sm-mile svg{width:13px;height:13px;color:var(--p-green);flex:none}
+.sm-mile svg.todo{color:var(--p-border-strong)}
+.sm-week{position:relative;padding:0 0 22px 24px;border-left:1px solid var(--p-border)}
+.sm-week:last-child{padding-bottom:4px}
+.sm-week::before{content:"";position:absolute;left:-5.5px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--p-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--p-primary) 22%,transparent)}
+.sm-week .wdate{font-size:11.5px;color:var(--p-muted);margin-bottom:4px}
+.sm-week h3{font-family:var(--p-font-display);font-size:15px;font-weight:600}
+.sm-week ul{margin:8px 0 0 18px;display:flex;flex-direction:column;gap:5px}
+.sm-week li{font-size:13px;color:var(--p-muted)}
+.sm-week li b{color:var(--p-text);font-weight:500}
+.sm-learn-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:28px;align-items:start}
+@media (max-width:920px){.sm-learn-grid{grid-template-columns:1fr}}
+.sm-book{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--p-border)}
+.sm-book:last-child{border-bottom:none}
+.sm-book .bic{width:38px;height:50px;border-radius:5px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff}
+.sm-book .bic svg{width:17px;height:17px}
+.sm-book b{display:block;font-size:13px;font-weight:600}
+.sm-book span{font-size:12px;color:var(--p-muted)}
+
+/* ---------- 关于页 ---------- */
+.sm-about-grid{display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start}
+@media (max-width:920px){.sm-about-grid{grid-template-columns:1fr}}
+.sm-avatar-card{background:var(--p-card);border:1px solid var(--p-border);border-radius:16px;padding:26px 24px;text-align:center}
+.sm-avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 16px;background:var(--p-grad);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--p-shadow)}
+.sm-avatar svg{width:42px;height:42px}
+.sm-avatar-card h2{font-family:var(--p-font-display);font-size:19px;font-weight:700}
+.sm-avatar-card .role{font-size:12.5px;color:var(--p-muted);margin:5px 0 16px}
+.sm-avatar-card .loc{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--p-muted);margin-bottom:18px}
+.sm-avatar-card .loc svg{width:13px;height:13px}
+.sm-avatar-card .socials{display:flex;justify-content:center;gap:8px}
+.sm-about-sec{margin-bottom:30px}
+.sm-about-sec h3{font-family:var(--p-font-display);font-size:17px;font-weight:600;margin-bottom:12px}
+.sm-about-sec p{font-size:13.5px;color:var(--p-muted);max-width:640px}
+.sm-skill-chips{display:flex;gap:8px;flex-wrap:wrap}
+.sm-skill-chips span{font-size:12.5px;padding:6px 13px;border-radius:9px;background:var(--p-card);border:1px solid var(--p-border)}
+.sm-tl{position:relative;padding-left:22px;display:flex;flex-direction:column;gap:18px}
+.sm-tl-item{position:relative}
+.sm-tl-item::before{content:"";position:absolute;left:-22px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--p-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--p-primary) 20%,transparent)}
+.sm-tl-item .y{font-size:11.5px;color:var(--p-primary);font-weight:600;font-variant-numeric:tabular-nums}
+.sm-tl-item b{display:block;font-size:14px;font-weight:600;margin:2px 0}
+.sm-tl-item span{font-size:12.5px;color:var(--p-muted)}
+.sm-coop{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:920px){.sm-coop{grid-template-columns:1fr}}
+.sm-coop-card{background:var(--p-card);border:1px solid var(--p-border);border-radius:14px;padding:20px}
+.sm-coop-card .cic{width:36px;height:36px;border-radius:10px;background:color-mix(in srgb,var(--p-primary) 14%,transparent);color:var(--p-primary);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.sm-coop-card .cic svg{width:17px;height:17px}
+.sm-coop-card b{display:block;font-size:14px;font-weight:600;margin-bottom:5px}
+.sm-coop-card span{font-size:12.5px;color:var(--p-muted)}
+.sm-hero-static-note{max-width:1120px;margin:14px auto 0;padding:0 48px;font-size:11.5px;color:var(--p-muted)}
+</style>
+
+<!-- 设计稿工具条 -->
+<div class="sm-meta">
+  <div class="sm-meta-brand"><span class="dot"></span>星屿工作室 · 官网设计稿 <span class="ver">v1.0</span></div>
+  <div class="sm-tabs" role="group" aria-label="切换设计页面">
+    <button type="button" class="sm-tab" data-page-btn="home" aria-pressed="true">首页</button>
+    <button type="button" class="sm-tab" data-page-btn="products" aria-pressed="false">产品</button>
+    <button type="button" class="sm-tab" data-page-btn="blog" aria-pressed="false">博客</button>
+    <button type="button" class="sm-tab" data-page-btn="learning" aria-pressed="false">学习记录</button>
+    <button type="button" class="sm-tab" data-page-btn="about" aria-pressed="false">关于</button>
+  </div>
+  <button type="button" class="sm-iconbtn sm-theme-ic" data-theme-btn aria-label="切换明暗主题" data-tooltip="明 / 暗主题切换">
+    <span class="ic-moon"><i data-lucide="moon" aria-hidden="true"></i></span>
+    <span class="ic-sun"><i data-lucide="sun" aria-hidden="true"></i></span>
+  </button>
+</div>
+
+<!-- 浏览器窗口 -->
+<div class="sm-window">
+  <div class="sm-chrome">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="sm-url"><i data-lucide="lock" aria-hidden="true"></i>starisle.dev</div>
+    <div style="width:52px"></div>
+  </div>
+
+  <div class="sm-site">
+    <!-- 站点导航 -->
+    <nav class="sm-nav" aria-label="站点导航">
+      <div class="sm-logo">
+        <span class="mark"><i data-lucide="orbit" aria-hidden="true"></i></span>
+        <span>星屿工作室<small>STARISLE STUDIO</small></span>
+      </div>
+      <div class="sm-nav-links">
+        <button type="button" class="active" data-page-btn="home">首页</button>
+        <button type="button" data-page-btn="products">产品</button>
+        <button type="button" data-page-btn="blog">博客</button>
+        <button type="button" data-page-btn="learning">学习记录</button>
+        <button type="button" data-page-btn="about">关于</button>
+      </div>
+      <div class="sm-nav-right">
+        <button type="button" class="ic" aria-label="搜索"><i data-lucide="search" aria-hidden="true"></i></button>
+        <a class="ic" href="#" aria-label="GitHub"><i data-lucide="github" aria-hidden="true"></i></a>
+        <a class="sm-btn primary" href="#contact">联系我</a>
+        <button type="button" class="ic sm-menu" aria-label="菜单"><i data-lucide="menu" aria-hidden="true"></i></button>
+      </div>
+    </nav>
+
+    <main>
+      <!-- ============ 首页 ============ -->
+      <section id="page-home" aria-label="首页设计">
+        <div class="sm-hero">
+          <div class="sm-hero-in">
+            <div>
+              <span class="sm-hero-badge"><i data-lucide="sparkles" aria-hidden="true"></i>独立开发 · 持续学习 · <b>已连续记录 234 天</b></span>
+              <h1>把想法做成产品，<br>把学习<span class="grad">写成作品</span>。</h1>
+              <p class="lead">你好，我是屿（Yǔ）。这里是我的数字花园：展示我在做的产品，记录我正在学的东西，也分享一路踩过的坑。</p>
+              <div class="sm-hero-cta">
+                <a class="sm-btn primary" href="#" data-page-btn="products">浏览我的产品 <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+                <a class="sm-btn ghost" href="#" data-page-btn="learning">看看我在学什么</a>
+              </div>
+              <div class="sm-stats">
+                <div class="sm-stat"><b>6</b><span>上线 / 在建产品</span></div>
+                <div class="sm-stat"><b>128</b><span>篇文章</span></div>
+                <div class="sm-stat"><b>1.2k</b><span>GitHub Stars</span></div>
+                <div class="sm-stat"><b>234</b><span>天连续学习</span></div>
+              </div>
+            </div>
+            <div class="sm-editor-wrap">
+              <div class="sm-editor">
+                <div class="ed-bar"><i></i><i></i><i></i><span class="fname">studio.config.ts</span></div>
+                <pre><span class="tk-c">// 把每一次学习，都沉淀为可见的产出</span>
+<span class="tk-k">const</span> <span class="tk-p">studio</span> = {
+  name: <span class="tk-s">"星屿工作室"</span>,
+  focus: [<span class="tk-s">"AI 应用"</span>, <span class="tk-s">"效率工具"</span>],
+  openSource: <span class="tk-k">true</span>,
+  shipping: <span class="tk-k">true</span>,
+};
+
+<span class="tk-k">function</span> <span class="tk-f">build</span>(idea) {
+  <span class="tk-k">return</span> idea.<span class="tk-f">learn</span>()
+    .<span class="tk-f">prototype</span>()
+    .<span class="tk-f">ship</span>(); <span class="tk-c">// 🚀 持续交付</span>
+}</pre>
+              </div>
+              <div class="sm-chip c1"><i data-lucide="zap" aria-hidden="true"></i>本周 commit ×12</div>
+              <div class="sm-chip c2"><i data-lucide="boxes" aria-hidden="true"></i>6 个产品在线</div>
+              <div class="sm-chip c3"><i data-lucide="flask-conical" aria-hidden="true"></i>RAG 调优中…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 精选产品 -->
+        <div class="sm-section">
+          <div class="sm-sec-head">
+            <div><h2>精选产品</h2><p>我做过的东西：从微信小程序到开源库</p></div>
+            <a class="more" href="#" data-page-btn="products">全部产品 <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          </div>
+          <div class="sm-grid-3">
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#6d7cff,#8b5cf6)">
+                <span class="sm-status on">已上线</span><span class="big-ic"><i data-lucide="file-text" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>AI 简历优化器 &amp; 周报生成器</h3>
+                <p class="desc">粘贴工作记录，AI 自动生成结构化周报；上传简历，获得逐条优化建议与量化改写。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">Next.js</span><span class="sm-chip-tag">LLM</span><span class="sm-chip-tag">Vercel</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="users" aria-hidden="true"></i>3.4k 用户</span><span><i data-lucide="star" aria-hidden="true"></i>486</span><a href="#" style="margin-left:auto;color:var(--p-primary)"><i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+              </div>
+            </div>
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#0891b2,#22d3ee)">
+                <span class="sm-status on">已上线</span><span class="big-ic"><i data-lucide="database" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>个人知识库问答（RAG）</h3>
+                <p class="desc">把笔记、文档喂进去，用自然语言提问，答案带出处引用。支持本地部署与多 Agent 协作。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">RAG</span><span class="sm-chip-tag">Agent</span><span class="sm-chip-tag">pgvector</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="users" aria-hidden="true"></i>980 用户</span><span><i data-lucide="star" aria-hidden="true"></i>712</span><a href="#" style="margin-left:auto;color:var(--p-primary)"><i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+              </div>
+            </div>
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#d97706,#fbbf24)">
+                <span class="sm-status dev">开发中</span><span class="big-ic"><i data-lucide="graduation-cap" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>雅思 7.0 词汇卡</h3>
+                <p class="desc">配套我的「六个月雅思 7.0 计划」，间隔重复记忆 + 真题例句，微信小程序端。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">微信小程序</span><span class="sm-chip-tag">TS</span><span class="sm-chip-tag">SQLite</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="users" aria-hidden="true"></i>内测中</span><span><i data-lucide="calendar" aria-hidden="true"></i>11 月上线</span><a href="#" style="margin-left:auto;color:var(--p-primary)"><i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最新文章 -->
+        <div class="sm-section" style="padding-top:8px">
+          <div class="sm-sec-head">
+            <div><h2>最新文章</h2><p>教程 · 工具 · AI · 复盘，每周至少更新一篇</p></div>
+            <a class="more" href="#" data-page-btn="blog">全部文章 <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          </div>
+          <div class="sm-grid-2">
+            <div class="sm-post">
+              <div class="top"><span class="sm-tag hot">AI 应用</span><span>置顶</span></div>
+              <h3>多 Agent 协作落地方案调研：从 CrewAI 到自研编排</h3>
+              <p>对比主流多 Agent 框架的编排模型与成本结构，给出小团队可落地的选型建议与自研方案。</p>
+              <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-26</span><span><i data-lucide="clock" aria-hidden="true"></i>14 分钟</span></div>
+            </div>
+            <div class="sm-post">
+              <div class="top"><span class="sm-tag">RAG</span></div>
+              <h3>把 RAG 检索准确率从 62% 提到 89%：我的 7 个实践</h3>
+              <p>分块策略、混合检索、重排序、引用校验——每个优化点都附上前后对比数据。</p>
+              <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-18</span><span><i data-lucide="clock" aria-hidden="true"></i>11 分钟</span></div>
+            </div>
+            <div class="sm-post">
+              <div class="top"><span class="sm-tag">效率工具</span></div>
+              <h3>我用 Astro + AI 一晚上搭好了这个官网</h3>
+              <p>从设计稿到上线的完整复盘：技术选型理由、目录结构、以及让 AI 写得更好的提示词。</p>
+              <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-12</span><span><i data-lucide="clock" aria-hidden="true"></i>9 分钟</span></div>
+            </div>
+            <div class="sm-post">
+              <div class="top"><span class="sm-tag">产品复盘</span></div>
+              <h3>上线 3 个月，AI 简历优化器给我上的 5 课</h3>
+              <p>获客、留存、付费转化各个阶段踩的坑，以及为什么我砍掉了两个"很酷"的功能。</p>
+              <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-05</span><span><i data-lucide="clock" aria-hidden="true"></i>12 分钟</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 学习动态 -->
+        <div class="sm-section" style="padding-top:8px">
+          <div class="sm-sec-head">
+            <div><h2>学习动态</h2><p>像 GitHub 一样，让坚持可见</p></div>
+            <a class="more" href="#" data-page-btn="learning">学习记录 <i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          </div>
+          <div class="sm-learn-strip">
+            <div class="sm-learn-top">
+              <h3><i data-lucide="flame" aria-hidden="true"></i>近半年学习热力图</h3>
+              <span class="sm-streak"><i data-lucide="flame" aria-hidden="true"></i>连续 234 天 · 本周 18 次记录</span>
+            </div>
+            <div class="sm-heatmap" id="sm-heatmap" role="img" aria-label="近半年学习活跃度热力图"></div>
+            <div class="sm-heat-foot">
+              <span>少</span>
+              <div class="sm-legend"><i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i></div>
+              <span>多</span>
+              <span style="margin-left:auto">本周在学习：<b style="color:var(--p-text)">Rust 所有权 · Agent 编排 · 雅思口语 Part2</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="sm-cta">
+          <div class="sm-cta-in">
+            <div><h3>有想法？一起做点东西。</h3><p>项目合作、技术咨询，或者只是聊聊独立开发 —— 都欢迎。</p></div>
+            <a class="sm-btn" href="#" data-page-btn="about">联系我 <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 产品页 ============ -->
+      <section id="page-products" aria-label="产品页设计" hidden>
+        <div class="sm-page-head">
+          <h1>产品</h1>
+          <p>我独立或主导开发的产品与开源项目。每一个都从真实需求出发，能被真实的人使用。</p>
+        </div>
+        <div class="sm-section" style="padding-top:26px">
+          <div class="sm-sub-head"><i data-lucide="rocket" aria-hidden="true"></i>在线产品</div>
+          <div class="sm-grid-3">
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#6d7cff,#8b5cf6)">
+                <span class="sm-status on">已上线</span><span class="big-ic"><i data-lucide="file-text" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>AI 简历优化器 &amp; 周报生成器</h3>
+                <p class="desc">从 git 提交与工作记录一键生成结构化周报；简历逐条量化改写。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">Next.js</span><span class="sm-chip-tag">LLM</span><span class="sm-chip-tag">Vercel</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="users" aria-hidden="true"></i>3.4k 用户</span><span><i data-lucide="trending-up" aria-hidden="true"></i>月增 18%</span><a href="#" style="margin-left:auto;color:var(--p-primary)">访问 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+              </div>
+            </div>
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#0891b2,#22d3ee)">
+                <span class="sm-status on">已上线</span><span class="big-ic"><i data-lucide="database" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>个人知识库问答（RAG）</h3>
+                <p class="desc">自然语言检索私人笔记与文档，答案带出处，支持本地部署。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">RAG</span><span class="sm-chip-tag">pgvector</span><span class="sm-chip-tag">Docker</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="users" aria-hidden="true"></i>980 用户</span><span><i data-lucide="star" aria-hidden="true"></i>712</span><a href="#" style="margin-left:auto;color:var(--p-primary)">访问 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+              </div>
+            </div>
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#059669,#34d399)">
+                <span class="sm-status on">已上线</span><span class="big-ic"><i data-lucide="gamepad-2" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>七巧板 · 小游戏</h3>
+                <p class="desc">经典七巧板益智游戏，50 个关卡，支持拖拽吸附与限时挑战。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">Canvas</span><span class="sm-chip-tag">H5</span><span class="sm-chip-tag">PWA</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="users" aria-hidden="true"></i>6.1k 用户</span><span><i data-lucide="heart" aria-hidden="true"></i>好评 97%</span><a href="#" style="margin-left:auto;color:var(--p-primary)">访问 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sm-sub-head"><i data-lucide="flask-conical" aria-hidden="true"></i>在建与内测</div>
+          <div class="sm-grid-3">
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#d97706,#fbbf24)">
+                <span class="sm-status dev">开发中</span><span class="big-ic"><i data-lucide="graduation-cap" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>雅思 7.0 词汇卡</h3>
+                <p class="desc">间隔重复 + 真题例句，配套六个月备考计划的微信小程序。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">小程序</span><span class="sm-chip-tag">TS</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-11 上线</span></div>
+              </div>
+            </div>
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#9333ea,#c084fc)">
+                <span class="sm-status beta">内测</span><span class="big-ic"><i data-lucide="book-open" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>图书推荐引擎</h3>
+                <p class="desc">基于阅读口味标签的个性化书单推荐，附推荐理由解释。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">协同过滤</span><span class="sm-chip-tag">Python</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="star" aria-hidden="true"></i>GitHub 486</span></div>
+              </div>
+            </div>
+            <div class="sm-card">
+              <div class="sm-cover" style="background:linear-gradient(135deg,#475569,#64748b)">
+                <span class="sm-status dev">开发中</span><span class="big-ic"><i data-lucide="layers" aria-hidden="true"></i></span>
+              </div>
+              <div class="sm-card-body">
+                <h3>星屿 UI · 开源组件库</h3>
+                <p class="desc">从本站设计中抽出的组件库：暗色优先、无依赖、可复制粘贴。</p>
+                <div class="sm-chips"><span class="sm-chip-tag">Web Components</span><span class="sm-chip-tag">CSS</span></div>
+                <div class="sm-card-meta"><span><i data-lucide="calendar" aria-hidden="true"></i>进度 40%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sm-cta"><div class="sm-cta-in">
+          <div><h3>想看某个产品是怎么做出来的？</h3><p>每个产品都有一篇从 0 到 1 的复盘文章。</p></div>
+          <a class="sm-btn" href="#" data-page-btn="blog">去看复盘 <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+        </div></div>
+      </section>
+
+      <!-- ============ 博客页 ============ -->
+      <section id="page-blog" aria-label="博客页设计" hidden>
+        <div class="sm-page-head">
+          <h1>博客</h1>
+          <p>写给自己，也写给搜索到这里的人。每篇都力求解决一个具体问题。</p>
+        </div>
+        <div class="sm-section" style="padding-top:6px">
+          <div class="sm-blog-layout">
+            <div>
+              <div class="sm-search"><i data-lucide="search" aria-hidden="true"></i><input type="text" placeholder="搜索文章，如 RAG、部署、Astro…" aria-label="搜索文章"></div>
+              <div class="sm-filter">
+                <button type="button" class="sm-pill active">全部</button>
+                <button type="button" class="sm-pill">AI 应用</button>
+                <button type="button" class="sm-pill">前端</button>
+                <button type="button" class="sm-pill">效率工具</button>
+                <button type="button" class="sm-pill">产品复盘</button>
+                <button type="button" class="sm-pill">学习周记</button>
+              </div>
+              <div class="sm-feature">
+                <div class="fcov" style="background:linear-gradient(135deg,#6d7cff,#38d9f5)"><span class="big-ic"><i data-lucide="network" aria-hidden="true"></i></span></div>
+                <div class="fbody">
+                  <div class="top" style="display:flex;gap:8px;align-items:center"><span class="sm-tag hot">AI 应用</span><span style="font-size:11.5px;color:var(--p-muted)">精选 · 置顶</span></div>
+                  <h3>多 Agent 协作落地方案调研：从 CrewAI 到自研编排</h3>
+                  <p>万字长文：对比主流多 Agent 框架的任务编排、消息传递与成本结构；给出 3 人以下小团队的选型决策树，以及我自研编排器的完整思路与代码。</p>
+                  <div class="bottom" style="display:flex;gap:14px;font-size:12px;color:var(--p-muted)"><span style="display:inline-flex;align-items:center;gap:5px"><i data-lucide="calendar" aria-hidden="true"></i>2026-10-26</span><span style="display:inline-flex;align-items:center;gap:5px"><i data-lucide="clock" aria-hidden="true"></i>14 分钟</span></div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div class="sm-post">
+                  <div class="top"><span class="sm-tag">RAG</span><span class="sm-tag">LLM</span></div>
+                  <h3>把 RAG 检索准确率从 62% 提到 89%：我的 7 个实践</h3>
+                  <p>分块策略、混合检索、重排序、引用校验——每个优化点都附前后对比数据与代码。</p>
+                  <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-18</span><span><i data-lucide="clock" aria-hidden="true"></i>11 分钟</span><span style="margin-left:auto;color:var(--p-primary)">阅读 <i data-lucide="chevron-right" aria-hidden="true"></i></span></div>
+                </div>
+                <div class="sm-post">
+                  <div class="top"><span class="sm-tag">前端</span><span class="sm-tag">Astro</span></div>
+                  <h3>我用 Astro + AI 一晚上搭好了这个官网</h3>
+                  <p>从设计稿到上线的完整复盘：为什么选 Astro 而不是 Next.js，目录结构怎么组织。</p>
+                  <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-12</span><span><i data-lucide="clock" aria-hidden="true"></i>9 分钟</span><span style="margin-left:auto;color:var(--p-primary)">阅读 <i data-lucide="chevron-right" aria-hidden="true"></i></span></div>
+                </div>
+                <div class="sm-post">
+                  <div class="top"><span class="sm-tag">产品复盘</span></div>
+                  <h3>上线 3 个月，AI 简历优化器给我上的 5 课</h3>
+                  <p>获客、留存、付费转化各阶段踩的坑，以及为什么砍掉两个"很酷"的功能。</p>
+                  <div class="bottom"><span><i data-lucide="calendar" aria-hidden="true"></i>2026-10-05</span><span><i data-lucide="clock" aria-hidden="true"></i>12 分钟</span><span style="margin-left:auto;color:var(--p-primary)">阅读 <i data-lucide="chevron-right" aria-hidden="true"></i></span></div>
+                </div>
+              </div>
+            </div>
+            <aside class="sm-side">
+              <div class="sm-side-card">
+                <h4><i data-lucide="archive" aria-hidden="true"></i>分类</h4>
+                <div class="row"><span>AI 应用</span><b>42</b></div>
+                <div class="row"><span>前端</span><b>31</b></div>
+                <div class="row"><span>效率工具</span><b>24</b></div>
+                <div class="row"><span>产品复盘</span><b>18</b></div>
+                <div class="row"><span>学习周记</span><b>13</b></div>
+              </div>
+              <div class="sm-side-card">
+                <h4><i data-lucide="tag" aria-hidden="true"></i>标签</h4>
+                <div class="sm-tagcloud">
+                  <span class="sm-tag">TypeScript</span><span class="sm-tag">Astro</span><span class="sm-tag">Rust</span>
+                  <span class="sm-tag">AI Agent</span><span class="sm-tag">RAG</span><span class="sm-tag">Next.js</span>
+                  <span class="sm-tag">SQLite</span><span class="sm-tag">部署</span><span class="sm-tag">随笔</span>
+                </div>
+              </div>
+              <div class="sm-side-card">
+                <h4><i data-lucide="rss" aria-hidden="true"></i>订阅</h4>
+                <div class="links" style="display:flex;flex-direction:column;gap:8px">
+                  <a href="#" style="font-size:13px;color:var(--p-primary)">RSS 订阅全部文章</a>
+                  <span style="font-size:12px;color:var(--p-muted)">每周日晚更新，欢迎用 RSS 阅读器追更。</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 学习记录页 ============ -->
+      <section id="page-learning" aria-label="学习记录页设计" hidden>
+        <div class="sm-page-head">
+          <h1>学习记录</h1>
+          <p>学以致用：每条路线都对应一个真实产品或一篇文章，用输出倒逼输入。</p>
+        </div>
+        <div class="sm-section" style="padding-top:10px">
+          <div class="sm-learn-grid">
+            <div>
+              <div class="sm-sub-head" style="margin-top:0"><i data-lucide="target" aria-hidden="true"></i>2026 学习路线</div>
+              <div class="sm-road">
+                <div class="sm-road-card">
+                  <div class="sm-road-top">
+                    <h3><span class="ric" style="background:color-mix(in srgb,var(--p-primary) 14%,transparent);color:var(--p-primary)"><i data-lucide="brain-circuit" aria-hidden="true"></i></span>大模型应用开发（Agent / RAG）</h3>
+                    <span class="pct">60%</span>
+                  </div>
+                  <div class="sm-bar"><span style="width:60%"></span></div>
+                  <div class="sm-mile">
+                    <span><i data-lucide="check" aria-hidden="true"></i>Prompt 工程与结构化输出</span>
+                    <span><i data-lucide="check" aria-hidden="true"></i>RAG 全链路：分块 / 混检 / 重排</span>
+                    <span><i data-lucide="check" aria-hidden="true"></i>多 Agent 协作调研（已发文章）</span>
+                    <span><i data-lucide="circle" class="todo" aria-hidden="true"></i>Agent 评测与可观测性</span>
+                  </div>
+                </div>
+                <div class="sm-road-card">
+                  <div class="sm-road-top">
+                    <h3><span class="ric" style="background:color-mix(in srgb,var(--p-amber) 14%,transparent);color:var(--p-amber)"><i data-lucide="cpu" aria-hidden="true"></i></span>Rust 系统编程</h3>
+                    <span class="pct">25%</span>
+                  </div>
+                  <div class="sm-bar"><span style="width:25%"></span></div>
+                  <div class="sm-mile">
+                    <span><i data-lucide="check" aria-hidden="true"></i>所有权与借用检查器</span>
+                    <span><i data-lucide="circle" class="todo" aria-hidden="true"></i>Tokio 异步实战</span>
+                    <span><i data-lucide="circle" class="todo" aria-hidden="true"></i>用 Rust 重写 RAG 服务</span>
+                  </div>
+                </div>
+                <div class="sm-road-card">
+                  <div class="sm-road-top">
+                    <h3><span class="ric" style="background:color-mix(in srgb,var(--p-green) 14%,transparent);color:var(--p-green)"><i data-lucide="graduation-cap" aria-hidden="true"></i></span>雅思 7.0（六个月计划）</h3>
+                    <span class="pct">40%</span>
+                  </div>
+                  <div class="sm-bar"><span style="width:40%"></span></div>
+                  <div class="sm-mile">
+                    <span><i data-lucide="check" aria-hidden="true"></i>词汇量 5.5k，听力 7.0</span>
+                    <span><i data-lucide="circle" class="todo" aria-hidden="true"></i>口语 Part 2 素材库（进行中）</span>
+                    <span><i data-lucide="circle" class="todo" aria-hidden="true"></i>写作批改 20 篇</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <aside class="sm-side">
+              <div class="sm-side-card">
+                <h4><i data-lucide="flame" aria-hidden="true"></i>打卡数据</h4>
+                <div class="sm-heatmap compact" id="sm-heatmap-2" role="img" aria-label="学习活跃度热力图"></div>
+                <div class="row" style="display:flex;justify-content:space-between;font-size:13px;color:var(--p-muted);padding:10px 0 0"><span>连续打卡</span><b style="color:var(--p-text)">234 天</b></div>
+                <div class="row" style="display:flex;justify-content:space-between;font-size:13px;color:var(--p-muted);padding:8px 0 0"><span>本年累计</span><b style="color:var(--p-text)">1,842 次</b></div>
+              </div>
+              <div class="sm-side-card">
+                <h4><i data-lucide="book-open" aria-hidden="true"></i>正在读的书</h4>
+                <div class="sm-book"><span class="bic" style="background:linear-gradient(135deg,#d97706,#fbbf24)"><i data-lucide="cpu" aria-hidden="true"></i></span><div><b>Rust 程序设计（第2版）</b><span>读到 61%</span></div></div>
+                <div class="sm-book"><span class="bic" style="background:linear-gradient(135deg,#6d7cff,#8b5cf6)"><i data-lucide="brain-circuit" aria-hidden="true"></i></span><div><b>AI Engineering</b><span>读到 34%</span></div></div>
+              </div>
+            </aside>
+          </div>
+
+          <div class="sm-sub-head"><i data-lucide="pen-line" aria-hidden="true"></i>学习周记（最近 3 条）</div>
+          <div style="max-width:720px">
+            <div class="sm-week">
+              <div class="wdate">2026-10-26 · 第 43 周</div>
+              <h3>完成多 Agent 编排调研，测试 3 种框架</h3>
+              <ul>
+                <li>跑通 <b>CrewAI / AutoGen / 自研</b> 三套方案的基准测试，自研方案成本最低</li>
+                <li>文章《多 Agent 协作落地方案调研》发布，收到 12 条讨论</li>
+                <li>下周：把编排器接进 RAG 知识库，替换原来的单 Agent 链路</li>
+              </ul>
+            </div>
+            <div class="sm-week">
+              <div class="wdate">2026-10-19 · 第 42 周</div>
+              <h3>RAG 重排序上线，准确率 82% → 89%</h3>
+              <ul>
+                <li>接入 bge-reranker，配合查询改写，长问题收益最大</li>
+                <li>踩坑：重排模型显存不足，改用 ONNX 量化版解决</li>
+                <li>沉淀文章一篇，附完整评测脚本</li>
+              </ul>
+            </div>
+            <div class="sm-week">
+              <div class="wdate">2026-10-12 · 第 41 周</div>
+              <h3>用 Astro 重构个人官网（就是你现在看的这个）</h3>
+              <ul>
+                <li>设计稿 → 代码一天完成，Lighthouse 四项 95+</li>
+                <li>决定把组件抽成开源库「星屿 UI」</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 关于页 ============ -->
+      <section id="page-about" aria-label="关于页设计" hidden>
+        <div class="sm-page-head">
+          <h1>关于</h1>
+          <p>一个人，也要像一支队伍。</p>
+        </div>
+        <div class="sm-section" style="padding-top:10px">
+          <div class="sm-about-grid">
+            <aside class="sm-avatar-card">
+              <div class="sm-avatar"><i data-lucide="user" aria-hidden="true"></i></div>
+              <h2>屿 · Yǔ</h2>
+              <div class="role">独立开发者 / 前端工程师 / 终身学习者</div>
+              <div class="loc"><i data-lucide="map-pin" aria-hidden="true"></i>中国 · 远程协作</div>
+              <div class="socials">
+                <a href="#" aria-label="GitHub"><i data-lucide="github" aria-hidden="true"></i></a>
+                <a href="#" aria-label="邮箱"><i data-lucide="mail" aria-hidden="true"></i></a>
+                <a href="#" aria-label="RSS"><i data-lucide="rss" aria-hidden="true"></i></a>
+                <a href="#" aria-label="微信"><i data-lucide="message-circle" aria-hidden="true"></i></a>
+              </div>
+              <a class="sm-btn primary" href="mailto:hi@starisle.dev" style="margin-top:18px;width:100%;justify-content:center">hi@starisle.dev</a>
+            </aside>
+            <div>
+              <div class="sm-about-sec">
+                <h3>你好，我是屿 👋</h3>
+                <p>一名喜欢把「学过的东西」变成「做出来的东西」的工程师。白天写业务，晚上做产品；相信输出是最好的学习方式，所以有了这个网站 —— 它既是我的产品橱窗，也是我的学习日志。</p>
+                <p style="margin-top:10px">如果这里有对你有用的文章或工具，欢迎随意取用；如果你有想法想合作，也欢迎直接邮件找我。</p>
+              </div>
+              <div class="sm-about-sec">
+                <h3>技能栈</h3>
+                <div class="sm-skill-chips">
+                  <span>TypeScript</span><span>React / Next.js</span><span>Astro</span><span>Node.js</span>
+                  <span>Python</span><span>Rust（学习中）</span><span>RAG / Agent</span><span>微信小程序</span>
+                  <span>Docker</span><span>PostgreSQL</span><span>UI 设计</span>
+                </div>
+              </div>
+              <div class="sm-about-sec">
+                <h3>时间线</h3>
+                <div class="sm-tl">
+                  <div class="sm-tl-item"><span class="y">2026</span><b>成立星屿工作室</b><span>独立开发，上线 3 个产品，开始公开学习记录</span></div>
+                  <div class="sm-tl-item"><span class="y">2024 – 2025</span><b>某互联网公司 · 高级前端工程师</b><span>负责大型 B 端产品前端架构与工程效率</span></div>
+                  <div class="sm-tl-item"><span class="y">2022 – 2024</span><b>创业公司 · 全栈工程师</b><span>从 0 到 1 搭建产品，经历 0 → 10w 用户的完整周期</span></div>
+                  <div class="sm-tl-item"><span class="y">2019 – 2022</span><b>独立接单 &amp; 开源</b><span>维护多个开源项目，累计 1.2k Stars</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sm-sub-head"><i data-lucide="briefcase" aria-hidden="true"></i>合作方式</div>
+          <div class="sm-coop">
+            <div class="sm-coop-card">
+              <span class="cic"><i data-lucide="rocket" aria-hidden="true"></i></span>
+              <b>项目定制开发</b><span>小程序 / Web 应用 / AI 工具，从需求到上线，报价透明、周期明确。</span>
+            </div>
+            <div class="sm-coop-card">
+              <span class="cic"><i data-lucide="message-circle" aria-hidden="true"></i></span>
+              <b>技术咨询</b><span>RAG 落地、前端架构、工程效率改进，按次或按月咨询。</span>
+            </div>
+            <div class="sm-coop-card">
+              <span class="cic"><i data-lucide="feather" aria-hidden="true"></i></span>
+              <b>内容合作</b><span>技术写作、开源共建、产品测评，欢迎邮件详聊。</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="sm-foot" id="contact">
+      <div class="sm-foot-in">
+        <div class="sm-foot-grid">
+          <div class="sm-foot-brand">
+            <div class="sm-logo" style="font-size:15px">
+              <span class="mark"><i data-lucide="orbit" aria-hidden="true"></i></span>
+              <span>星屿工作室<small>STARISLE STUDIO</small></span>
+            </div>
+            <p>把想法做成产品，把学习写成文章。一个普通开发者的数字花园。</p>
+            <div class="sm-socials">
+              <a href="#" aria-label="GitHub"><i data-lucide="github" aria-hidden="true"></i></a>
+              <a href="#" aria-label="邮箱"><i data-lucide="mail" aria-hidden="true"></i></a>
+              <a href="#" aria-label="RSS"><i data-lucide="rss" aria-hidden="true"></i></a>
+            </div>
+          </div>
+          <div>
+            <h4>站内导航</h4>
+            <div class="links">
+              <button type="button" data-page-btn="home">首页</button>
+              <button type="button" data-page-btn="products">产品</button>
+              <button type="button" data-page-btn="blog">博客</button>
+              <button type="button" data-page-btn="learning">学习记录</button>
+              <button type="button" data-page-btn="about">关于 / 合作</button>
+            </div>
+          </div>
+          <div>
+            <h4>更多</h4>
+            <div class="links">
+              <a href="#">RSS 订阅</a>
+              <a href="#">友链</a>
+              <a href="#">网站源码 (GitHub)</a>
+              <a href="#">更新日志</a>
+            </div>
+          </div>
+        </div>
+        <div class="sm-foot-bottom">
+          <span>© 2026 星屿工作室 · 用 Astro 构建 · 托管于 Vercel</span>
+          <span>示例品牌信息，替换为你的即可</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById("starisle-mock");
+  var pages = ["home", "products", "blog", "learning", "about"];
+
+  function setState() {
+    try {
+      if (window.zcode && typeof window.zcode.setWidgetState === "function") {
+        window.zcode.setWidgetState({
+          privateContent: { page: root.__page, theme: root.getAttribute("data-theme") }
+        }).catch(function () {});
+      }
+    } catch (e) {}
+  }
+
+  function showPage(name) {
+    if (pages.indexOf(name) === -1) name = "home";
+    root.__page = name;
+    pages.forEach(function (p) {
+      var el = document.getElementById("page-" + p);
+      if (el) el.hidden = p !== name;
+    });
+    var btns = root.querySelectorAll("[data-page-btn]");
+    for (var i = 0; i < btns.length; i++) {
+      var b = btns[i];
+      var on = b.getAttribute("data-page-btn") === name;
+      if (b.classList.contains("sm-tab")) {
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      } else if (b.classList.contains("sm-pill")) {
+        // ignore
+      } else {
+        b.classList.toggle("active", on);
+      }
+    }
+    var win = root.querySelector(".sm-window");
+    if (win) win.scrollIntoView({ block: "start", behavior: "smooth" });
+    setState();
+  }
+
+  var restored = null;
+  try {
+    if (window.zcode && window.zcode.widgetState && window.zcode.widgetState.privateContent) {
+      restored = window.zcode.widgetState.privateContent;
+    }
+  } catch (e) {}
+
+  var tabs = root.querySelectorAll("[data-page-btn]");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener("click", function () { showPage(this.getAttribute("data-page-btn")); });
+  }
+
+  function setTheme(t) {
+    root.setAttribute("data-theme", t);
+    setState();
+  }
+  var themeBtns = root.querySelectorAll("[data-theme-btn]");
+  for (var j = 0; j < themeBtns.length; j++) {
+    themeBtns[j].addEventListener("click", function () {
+      setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+  }
+
+  // 热力图（确定性的伪随机，主题感知配色）
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function buildHeatmap(el, seed, weekCount) {
+    if (!el || el.__built) return;
+    el.__built = true;
+    var rand = mulberry32(seed);
+    var end = new Date(2026, 9, 31);
+    var weeks = weekCount || 26;
+    var html = "";
+    for (var w = 0; w < weeks; w++) {
+      for (var d = 0; d < 7; d++) {
+        var dayIndex = w * 7 + d;
+        var date = new Date(end.getTime() - (weeks * 7 - 1 - dayIndex) * 86400000);
+        var dow = (date.getDay() + 6) % 7; // 周一为 0
+        var r = rand();
+        var count = 0;
+        if (r > (dow >= 5 ? 0.5 : 0.25)) {
+          count = 1 + Math.floor(rand() * 11);
+        }
+        var lv = count === 0 ? "" : count <= 2 ? "l1" : count <= 5 ? "l2" : count <= 8 ? "l3" : "l4";
+        var m = date.getMonth() + 1, dd = date.getDate();
+        html += '<i class="' + lv + '" data-tooltip="' + m + "月" + dd + "日 · " + count + ' 次记录"></i>';
+      }
+    }
+    el.innerHTML = html;
+  }
+  buildHeatmap(document.getElementById("sm-heatmap"), 42);
+  buildHeatmap(document.getElementById("sm-heatmap-2"), 42, 18);
+
+  showPage(restored && restored.page ? restored.page : "home");
+  if (restored && restored.theme) setTheme(restored.theme);
+})();
+</script>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  try { lucide.createIcons({ attrs: { width: 16, height: 16 } }); } catch (e) {}
+});
+</script>
+</body>
+</html>

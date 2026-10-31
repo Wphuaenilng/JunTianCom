@@ -1,0 +1,26 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  sub?: string;
+  href?: string;
+  more?: string;
+}
+const { title, sub, href, more } = Astro.props;
+---
+
+<div class="sec-head reveal">
+  <div>
+    <h2>{title}</h2>
+    {sub && <p>{sub}</p>}
+  </div>
+  {
+    href && more && (
+      <a class="more" href={href}>
+        {more}
+        <Icon name="lucide:chevron-right" />
+      </a>
+    )
+  }
+</div>

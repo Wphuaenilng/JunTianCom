@@ -1,0 +1,89 @@
+/* ============================================
+   设计令牌 · 对齐《设计图-工作室官网.html》
+   暗色为默认主题，浅色通过 [data-theme="light"] 覆盖
+   ============================================ */
+:root {
+  --bg: #0a0e16;
+  --bg-2: #0d1422;
+  --surface: #101827;
+  --card: #131c2e;
+  --border: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --text: #e7ecf5;
+  --muted: #8b95ab;
+  --primary: #6d7cff;
+  --primary-fg: #ffffff;
+  --cyan: #38d9f5;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --purple: #c084fc;
+  --red: #f87171;
+  --grad: linear-gradient(120deg, #6d7cff 0%, #38d9f5 100%);
+  --shadow: 0 10px 30px rgba(2, 6, 17, 0.45);
+  --font-display: "Sora Variable", "Sora", "Noto Sans SC", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg: #f5f7fb;
+  --bg-2: #eaeef6;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: rgba(15, 23, 42, 0.09);
+  --border-strong: rgba(15, 23, 42, 0.18);
+  --text: #0f1729;
+  --muted: #5b6478;
+  --primary: #4f46e5;
+  --primary-fg: #ffffff;
+  --cyan: #0891b2;
+  --green: #059669;
+  --amber: #d97706;
+  --purple: #9333ea;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+  color-scheme: light;
+}
+
+/* ============================================
+   主题色预设（强调色）· 与 data/site.ts ACCENTS 一致
+   ============================================ */
+:root[data-accent="aurora"] {
+  --primary: #0d9488;
+  --cyan: #22d3ee;
+  --grad: linear-gradient(120deg, #0d9488 0%, #22d3ee 100%);
+}
+:root[data-accent="aurora"][data-theme="light"] {
+  --primary: #0f766e;
+  --cyan: #0891b2;
+  --grad: linear-gradient(120deg, #0f766e 0%, #0891b2 100%);
+}
+:root[data-accent="sunset"] {
+  --primary: #ea580c;
+  --cyan: #f59e0b;
+  --grad: linear-gradient(120deg, #ea580c 0%, #f59e0b 100%);
+}
+:root[data-accent="sunset"][data-theme="light"] {
+  --primary: #c2410c;
+  --cyan: #b45309;
+  --grad: linear-gradient(120deg, #c2410c 0%, #b45309 100%);
+}
+:root[data-accent="sakura"] {
+  --primary: #a855f7;
+  --cyan: #ec4899;
+  --grad: linear-gradient(120deg, #a855f7 0%, #ec4899 100%);
+}
+:root[data-accent="sakura"][data-theme="light"] {
+  --primary: #7e22ce;
+  --cyan: #be185d;
+  --grad: linear-gradient(120deg, #7e22ce 0%, #be185d 100%);
+}
+:root[data-accent="rose"] {
+  --primary: #e11d48;
+  --cyan: #f97316;
+  --grad: linear-gradient(120deg, #e11d48 0%, #f97316 100%);
+}
+:root[data-accent="rose"][data-theme="light"] {
+  --primary: #be123c;
+  --cyan: #c2410c;
+  --grad: linear-gradient(120deg, #be123c 0%, #c2410c 100%);
+}

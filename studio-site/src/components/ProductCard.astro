@@ -1,0 +1,37 @@
+---
+import { Icon } from "astro-icon/components";
+import type { CollectionEntry } from "astro:content";
+import { gradientCss, STATUS_LABEL, STATUS_CLASS } from "../lib/theme";
+
+interface Props {
+  product: CollectionEntry<"products">;
+}
+const { product } = Astro.props;
+const { name, tagline, cover, icon, status, stack, metrics } = product.data;
+const url = `/products/${product.id}/`;
+---
+
+<article class="card reveal">
+  <a class="cover" href={url} style={`background:${gradientCss(cover)}`} aria-label={name}>
+    <span class={`status ${STATUS_CLASS[status]}`}>{STATUS_LABEL[status]}</span>
+    <span class="big-ic"><Icon name={`lucide:${icon}`} /></span>
+  </a>
+  <div class="card-body">
+    <h3><a href={url}>{name}</a></h3>
+    <p class="desc">{tagline}</p>
+    <div class="chips">
+      {stack.map((s) => <span class="chip-tag">{s}</span>)}
+    </div>
+    <div class="card-meta">
+      {
+        metrics.map((m) => (
+          <span>
+            {m.icon && <Icon name={`lucide:${m.icon}`} />}
+            {m.label}
+          </span>
+        ))
+      }
+      <a class="go" href={url}>详情 <Icon name="lucide:arrow-up-right" /></a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,102 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection, getEntry, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { gradientCss, STATUS_LABEL, STATUS_CLASS } from "../../lib/theme";
+
+export async function getStaticPaths() {
+  const products = await getCollection("products");
+  return products.map((product) => ({
+    params: { slug: product.id },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+const { name, tagline, cover, icon, status, stack, metrics, links, related } =
+  product.data;
+const { Content } = await render(product);
+
+let relatedPost = null;
+if (related) {
+  const found = await getEntry("blog", related);
+  if (found && !found.data.draft) relatedPost = found;
+}
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name,
+  description: tagline,
+  applicationCategory: "WebApplication",
+  url: new URL(`/products/${product.id}/`, "https://starisle.dev").href,
+};
+---
+
+<Base
+  title={`${name} · 星屿工作室`}
+  description={tagline}
+  path={`/products/${product.id}/`}
+  jsonld={jsonld}
+>
+  <div class="section" style="padding-bottom:0">
+    <a class="back-link" href="/products/">
+      <Icon name="lucide:arrow-left" />全部产品
+    </a>
+
+    <div class="detail-cover" style={`background:${gradientCss(cover)}`}>
+      <span class={`status ${STATUS_CLASS[status]}`}>{STATUS_LABEL[status]}</span>
+      <span class="big-ic"><Icon name={`lucide:${icon}`} /></span>
+    </div>
+
+    <h1 class="detail-title">{name}</h1>
+    <p class="detail-tagline">{tagline}</p>
+
+    <div class="detail-meta">
+      <span style={`color:var(--${status === "online" ? "green" : status === "beta" ? "purple" : "amber"})`}>
+        <Icon name="lucide:info" />{STATUS_LABEL[status]}
+      </span>
+      {
+        metrics.map((m) => (
+          <span>
+            {m.icon && <Icon name={`lucide:${m.icon}`} />}
+            {m.label}
+          </span>
+        ))
+      }
+      {
+        links?.site && (
+          <a class="btn primary" href={links.site} target="_blank" rel="noopener">
+            访问 <Icon name="lucide:arrow-up-right" />
+          </a>
+        )
+      }
+      {
+        links?.repo && (
+          <a class="btn ghost" href={links.repo} target="_blank" rel="noopener">
+            <Icon name="lucide:github" />源码
+          </a>
+        )
+      }
+    </div>
+
+    <div class="chips" style="margin-top:14px">
+      {stack.map((s) => <span class="chip-tag">{s}</span>)}
+    </div>
+
+    <div class="prose" style="max-width:720px">
+      <Content />
+      {
+        relatedPost && (
+          <a class="post-card" href={`/blog/${relatedPost.id}/`} style="display:flex;margin-top:28px">
+            <div class="top">
+              <span class="tag hot">{relatedPost.data.category}</span>
+            </div>
+            <h3>{relatedPost.data.title}</h3>
+            <p>{relatedPost.data.description}</p>
+          </a>
+        )
+      }
+    </div>
+  </div>
+</Base>

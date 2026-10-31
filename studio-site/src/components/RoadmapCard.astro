@@ -1,0 +1,37 @@
+---
+import { Icon } from "astro-icon/components";
+import type { RoadmapItem } from "../data/roadmap";
+
+interface Props {
+  item: RoadmapItem;
+}
+const { item } = Astro.props;
+const colorVar = `var(--${item.color})`;
+---
+
+<div class="road-card reveal">
+  <div class="road-top">
+    <h3>
+      <span class="ric" style={`background:color-mix(in srgb, ${colorVar} 14%, transparent);color:${colorVar}`}>
+        <Icon name={`lucide:${item.icon}`} />
+      </span>
+      {item.title}
+    </h3>
+    <span class="pct">{item.progress}%</span>
+  </div>
+  <div class="bar"><span style={`width:${item.progress}%`} /></div>
+  <div class="mile">
+    {
+      item.milestones.map((m) => (
+        <span>
+          {m.done ? (
+            <Icon name="lucide:check" />
+          ) : (
+            <Icon name="lucide:circle" class="todo" />
+          )}
+          {m.text}
+        </span>
+      ))
+    }
+  </div>
+</div>

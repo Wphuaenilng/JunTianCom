@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../lib/utils";
+
+interface Props {
+  note: CollectionEntry<"learning">;
+}
+const { note } = Astro.props;
+const { week, date, title, highlights, links } = note.data;
+
+/** 周记 highlights 里的 **加粗** 转成 <b> */
+const renderMd = (s: string) => s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+---
+
+<div class="week reveal">
+  <div class="wdate">{formatDate(date)} · 第 {week} 周</div>
+  <h3>{title}</h3>
+  <ul>
+    {highlights.map((h) => <li set:html={renderMd(h)} />)}
+    {
+      links?.map((l) => (
+        <li>
+          <a href={l.slug ? `/blog/${l.slug}/` : l.url}>相关文章：《{l.text}》</a>
+        </li>
+      ))
+    }
+  </ul>
+</div>

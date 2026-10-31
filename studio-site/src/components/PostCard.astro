@@ -1,0 +1,44 @@
+---
+import { Icon } from "astro-icon/components";
+import type { CollectionEntry } from "astro:content";
+import { formatDate, readingMinutes } from "../lib/utils";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  /** home：显示分类（置顶高亮）；blog：显示标签，并支持页内过滤 */
+  variant?: "home" | "blog";
+}
+const { post, variant = "home" } = Astro.props;
+const { title, description, pubDate, category, tags, pinned } = post.data;
+const minutes = readingMinutes(post.body);
+const searchKey = [title, description, category, ...tags].join(" ");
+---
+
+<article
+  class="post-card reveal"
+  data-post
+  data-category={category}
+  data-search={searchKey}
+>
+  <div class="top">
+    {
+      variant === "home" ? (
+        <>
+          <span class:list={["tag", { hot: pinned }]}>{category}</span>
+          {pinned && <span>置顶</span>}
+        </>
+      ) : (
+        tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)
+      )
+    }
+  </div>
+  <h3><a href={`/blog/${post.id}/`}>{title}</a></h3>
+  <p>{description}</p>
+  <div class="bottom">
+    <span><Icon name="lucide:calendar" />{formatDate(pubDate)}</span>
+    <span><Icon name="lucide:clock" />{minutes} 分钟</span>
+    <span class="go">
+      阅读 <Icon name="lucide:chevron-right" />
+    </span>
+  </div>
+</article>

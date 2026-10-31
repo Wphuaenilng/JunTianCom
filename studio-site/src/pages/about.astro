@@ -1,0 +1,98 @@
+---
+import { Icon } from "astro-icon/components";
+import Base from "../layouts/Base.astro";
+import { SITE, SKILLS, TIMELINE, COOPS } from "../data/site";
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: SITE.author,
+  description: SITE.role,
+  email: `mailto:${SITE.email}`,
+  url: SITE.url,
+};
+---
+
+<Base
+  title={`关于 · 星屿工作室`}
+  description="一个人，也要像一支队伍。关于我、技能栈、时间线与合作方式。"
+  path="/about/"
+  jsonld={jsonld}
+>
+  <div class="page-head reveal">
+    <h1>关于</h1>
+    <p>一个人，也要像一支队伍。</p>
+  </div>
+
+  <section class="section" style="padding-top:10px">
+    <div class="about-grid">
+      <aside class="avatar-card reveal">
+        <div class="avatar"><Icon name="lucide:user" /></div>
+        <h2>{SITE.author} · {SITE.authorEn}</h2>
+        <div class="role">{SITE.role}</div>
+        <div class="loc"><Icon name="lucide:map-pin" />{SITE.location}</div>
+        <div class="socials">
+          <a href={SITE.github} target="_blank" rel="noopener" aria-label="GitHub"><Icon name="lucide:github" /></a>
+          <a href={`mailto:${SITE.email}`} aria-label="邮箱"><Icon name="lucide:mail" /></a>
+          <a href="/rss.xml" aria-label="RSS"><Icon name="lucide:rss" /></a>
+          <a href="#coop" aria-label="微信"><Icon name="lucide:message-circle" /></a>
+        </div>
+        <a class="btn primary w-full" href={`mailto:${SITE.email}`} style="margin-top:18px">
+          {SITE.email}
+        </a>
+      </aside>
+
+      <div>
+        <div class="about-sec">
+          <h3>你好，我是{SITE.author} 👋</h3>
+          <p>
+            一名喜欢把「学过的东西」变成「做出来的东西」的工程师。白天写业务，晚上做产品；相信输出是最好的学习方式，所以有了这个网站
+            —— 它既是我的产品橱窗，也是我的学习日志。
+          </p>
+          <p style="margin-top:10px">
+            如果这里有对你有用的文章或工具，欢迎随意取用；如果你有想法想合作，也欢迎直接邮件找我。
+          </p>
+        </div>
+
+        <div class="about-sec">
+          <h3>技能栈</h3>
+          <div class="skill-chips">
+            {SKILLS.map((s) => <span>{s}</span>)}
+          </div>
+        </div>
+
+        <div class="about-sec">
+          <h3>时间线</h3>
+          <div class="tl">
+            {
+              TIMELINE.map((t) => (
+                <div class="tl-item">
+                  <span class="y">{t.year}</span>
+                  <b>{t.title}</b>
+                  <span>{t.desc}</span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-head reveal" id="coop" style="scroll-margin-top:80px">
+      <Icon name="lucide:briefcase" />合作方式
+    </div>
+    <div class="coop">
+      {
+        COOPS.map((c) => (
+          <div class="coop-card reveal">
+            <span class="cic">
+              <Icon name={`lucide:${c.icon}`} />
+            </span>
+            <b>{c.title}</b>
+            <span>{c.desc}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
