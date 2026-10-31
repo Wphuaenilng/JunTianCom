@@ -3,11 +3,12 @@ description: 记录今天的学习——提交后机器人会自动写入热力�
 title: "打卡"
 labels: ["打卡"]
 body:
-  - type: date
+  - type: input
     id: date
     attributes:
       label: 日期
-      description: 不填默认为今天（北京时间）
+      description: 不填默认为今天（北京时间），格式 YYYY-MM-DD
+      placeholder: "2026-10-31"
     validations:
       required: false
   - type: textarea
