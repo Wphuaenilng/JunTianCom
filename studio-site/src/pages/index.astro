@@ -29,7 +29,7 @@ const latestPosts = [...posts]
   .sort((a, b) => Number(b.data.pinned) - Number(a.data.pinned))
   .slice(0, 4);
 
-const heatDays = buildHeatmap(42, 26);
+const heatDays = buildHeatmap(26);
 
 const heroStats = [
   { value: products.length, label: "上线 / 在建产品" },

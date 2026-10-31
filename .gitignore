@@ -19,3 +19,4 @@ studio-site/.tmp-*
 # OS
 Thumbs.db
 .DS_Store
+.zcode/

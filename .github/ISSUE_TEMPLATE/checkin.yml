@@ -1,0 +1,29 @@
+name: 打卡
+description: 记录今天的学习——提交后机器人会自动写入热力图数据
+title: "打卡"
+labels: ["打卡"]
+body:
+  - type: date
+    id: date
+    attributes:
+      label: 日期
+      description: 不填默认为今天（北京时间）
+    validations:
+      required: false
+  - type: textarea
+    id: topics
+    attributes:
+      label: 今天学了什么
+      description: 一行一个主题，将计入热力图深浅
+      placeholder: |
+        Rust 所有权
+        Agent 编排
+    validations:
+      required: true
+  - type: textarea
+    id: note
+    attributes:
+      label: 备注
+      description: 可选，不会计入热力图
+    validations:
+      required: false
