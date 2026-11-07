@@ -71,19 +71,27 @@ const { dirty, branch } = gitStatus();
 </style>
 
 <script>
-  const btn = document.getElementById("sync") as HTMLButtonElement | null;
-  const toast = (window as unknown as { adminToast?: (m: string, t?: "ok" | "err") => void }).adminToast;
-  btn?.addEventListener("click", async () => {
-    btn.disabled = true;
-    btn.textContent = "同步中…";
-    try {
-      const res = await fetch("/api/admin/git-sync", { method: "POST" });
-      const data = (await res.json()) as { ok: boolean; message: string };
-      toast?.(data.message, data.ok ? "ok" : "err");
-    } catch {
-      toast?.("请求失败", "err");
-    }
-    btn.disabled = false;
-    btn.textContent = "提交并推送";
-  });
+  // ClientRouter swap 后模块脚本不会重复执行,用 astro:page-load 重新绑定(幂等)
+  function bindSync() {
+    const btn = document.getElementById("sync") as HTMLButtonElement | null;
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = "1";
+    const toast = (window as unknown as { adminToast?: (m: string, t?: "ok" | "err") => void })
+      .adminToast;
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      btn.textContent = "同步中…";
+      try {
+        const res = await fetch("/api/admin/git-sync", { method: "POST" });
+        const data = (await res.json()) as { ok: boolean; message: string };
+        toast?.(data.message, data.ok ? "ok" : "err");
+      } catch {
+        toast?.("请求失败", "err");
+      }
+      btn.disabled = false;
+      btn.textContent = "提交并推送";
+    });
+  }
+  bindSync();
+  document.addEventListener("astro:page-load", bindSync);
 </script>

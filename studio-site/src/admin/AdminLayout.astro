@@ -2,10 +2,12 @@
 /**
  * 后台独立骨架 —— 继承官网品牌语言(深海军蓝 × 靛青渐变 × Sora)。
  * 不使用站点 Base 布局；仅 dev 注入时可达。
+ * ClientRouter:菜单切换走视图过渡(swap),侧栏/弹窗层持久化,不再整页刷新。
  */
 import "@fontsource-variable/sora";
 import "../styles/tokens.css";
 import "../styles/admin.css";
+import { ClientRouter } from "astro:transitions";
 import { Icon } from "astro-icon/components";
 
 interface Props {
@@ -46,8 +48,9 @@ const isActive = (href: string) =>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <title>{title} · 站点后台</title>
-    <script is:inline>
-      // 与官网共用主题键,首帧前设定避免闪烁
+    <ClientRouter />
+    <script is:inline data-astro-rerun>
+      // 与官网共用主题键,首帧前设定避免闪烁;data-astro-rerun 保证每次 swap 后重设
       try {
         document.documentElement.dataset.theme =
           localStorage.getItem("starisle-theme") ?? "dark";
@@ -55,7 +58,7 @@ const isActive = (href: string) =>
     </script>
   </head>
   <body class="admin">
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" transition:persist>
       <div class="admin-brand">
         <span class="admin-brand-mark"><Icon name="lucide:orbit" size={17} /></span>
         <div>
@@ -101,7 +104,7 @@ const isActive = (href: string) =>
       <slot />
     </main>
 
-    <div class="admin-toast-wrap" id="admin-toasts"></div>
+    <div class="admin-toast-wrap" id="admin-toasts" transition:persist></div>
   </body>
 </html>
 
@@ -130,10 +133,12 @@ const isActive = (href: string) =>
   }
   (window as unknown as Record<string, unknown>).adminToast = adminToast;
 
-  // 明暗主题切换(与官网共用 localStorage 键 starisle-theme)
-  document
-    .getElementById("admin-theme-toggle")
-    ?.addEventListener("click", () => {
+  // 明暗主题切换(侧栏已持久化,绑定一次即可;与官网共用 localStorage 键)
+  function bindThemeToggle() {
+    const btn = document.getElementById("admin-theme-toggle");
+    if (!btn || btn.dataset.bound) return;
+    btn.dataset.bound = "1";
+    btn.addEventListener("click", () => {
       const html = document.documentElement;
       const next = html.dataset.theme === "light" ? "dark" : "light";
       html.dataset.theme = next;
@@ -141,4 +146,24 @@ const isActive = (href: string) =>
         localStorage.setItem("starisle-theme", next);
       } catch {}
     });
+  }
+
+  // 侧栏持久化后,选中态在每次 swap 后按当前路径重算
+  function markActive() {
+    const path = location.pathname.replace(/\/+$/, "") || "/admin";
+    document.querySelectorAll(".admin-nav a").forEach((a) => {
+      const href = a.getAttribute("href") ?? "";
+      const active =
+        href === "/admin" ? path === "/admin" : path === href || path.startsWith(`${href}/`);
+      a.classList.toggle("active", active);
+    });
+  }
+
+  function initChrome() {
+    bindThemeToggle();
+    markActive();
+  }
+  initChrome();
+  // ClientRouter swap 后重新初始化;astro:page-load 首次加载也会触发,initChrome 幂等
+  document.addEventListener("astro:page-load", initChrome);
 </script>
