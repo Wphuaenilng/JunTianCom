@@ -286,9 +286,25 @@ function initCanvas() {
       Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2
     );
 
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    // 站点适配：暗角必须“同 RGB、纯 alpha 渐变”。
+    // 原实现从 rgba(0,0,0,0) 插值到目标色，中途会得到半透明灰——
+    // 深色主题下不可见，浅色主题会让整个首屏蒙一层灰雾。
+    const vignetteHex = /^#?([0-9a-f]{6})$/i.exec(props.vignetteColor.trim());
 
-    gradient.addColorStop(1, props.vignetteColor);
+    if (vignetteHex) {
+      const n = parseInt(vignetteHex[1], 16);
+      const vr = (n >> 16) & 255;
+      const vg = (n >> 8) & 255;
+      const vb = n & 255;
+
+      gradient.addColorStop(0, `rgba(${vr}, ${vg}, ${vb}, 0)`);
+
+      gradient.addColorStop(1, `rgba(${vr}, ${vg}, ${vb}, 1)`);
+    } else {
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+
+      gradient.addColorStop(1, props.vignetteColor);
+    }
 
     ctx.fillStyle = gradient;
 

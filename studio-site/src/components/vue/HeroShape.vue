@@ -45,7 +45,7 @@ const hoverFillColor = computed(() =>
 const borderColor = computed(() =>
   theme.value === "dark"
     ? "rgba(148, 163, 184, 0.28)"
-    : "rgba(15, 23, 42, 0.16)",
+    : "rgba(15, 23, 42, 0.07)"
 );
 const vignetteColor = computed(() =>
   theme.value === "dark" ? "#0a0e16" : "#f5f7fb",
