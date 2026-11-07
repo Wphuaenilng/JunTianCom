@@ -1,21 +1,39 @@
 ---
 /**
- * 后台独立骨架 —— 不使用站点 Base 布局，仅 dev 注入时可达。
+ * 后台独立骨架 —— 继承官网品牌语言(深海军蓝 × 靛青渐变 × Sora)。
+ * 不使用站点 Base 布局；仅 dev 注入时可达。
  */
+import "@fontsource-variable/sora";
+import "../styles/tokens.css";
+import "../styles/admin.css";
+import { Icon } from "astro-icon/components";
+
 interface Props {
   title: string;
+  desc?: string;
   active: string;
 }
-const { title, active } = Astro.props;
-const NAV = [
-  ["/admin", "仪表盘"],
-  ["/admin/checkins", "打卡记录"],
-  ["/admin/notes", "学习周记"],
-  ["/admin/posts", "博客文章"],
-  ["/admin/products", "产品展示"],
-  ["/admin/roadmap", "路线进度"],
-  ["/admin/settings", "站点配置"],
-] as const;
+const { title, desc, active } = Astro.props;
+
+const NAV_GROUPS: { label: string; items: [string, string, string][] }[] = [
+  {
+    label: "内容",
+    items: [
+      ["/admin/checkins", "打卡记录", "flame"],
+      ["/admin/notes", "学习周记", "notebook-pen"],
+      ["/admin/posts", "博客文章", "newspaper"],
+      ["/admin/products", "产品展示", "package"],
+    ],
+  },
+  {
+    label: "配置",
+    items: [
+      ["/admin/roadmap", "路线进度", "map"],
+      ["/admin/settings", "站点配置", "settings-2"],
+    ],
+  },
+];
+
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/admin";
 const isActive = (href: string) =>
   href === "/admin" ? path === "/admin" : path === href || path.startsWith(`${href}/`);
@@ -29,66 +47,64 @@ const isActive = (href: string) =>
     <meta name="robots" content="noindex" />
     <title>{title} · 站点后台</title>
   </head>
-  <body>
-    <aside>
-      <div class="brand"><span class="dot"></span>站点后台 <small>dev only</small></div>
-      <nav>
+  <body class="admin">
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <span class="admin-brand-mark"><Icon name="lucide:orbit" size={17} /></span>
+        <div>
+          <b>星屿后台</b>
+          <small>STARISLE ADMIN</small>
+        </div>
+      </div>
+      <nav class="admin-nav">
         {
-          NAV.map(([href, label]) => (
-            <a href={href} class:list={[{ active: isActive(href) }]}>
-              {label}
-            </a>
+          NAV_GROUPS.map((group) => (
+            <>
+              <div class="admin-nav-label">{group.label}</div>
+              {group.items.map(([href, label, icon]) => (
+                <a href={href} class:list={[{ active: isActive(href) }]}>
+                  <Icon name={`lucide:${icon}`} size={15} />
+                  {label}
+                </a>
+              ))}
+            </>
           ))
         }
       </nav>
-      <a class="back" href="/" target="_blank">打开官网 ↗</a>
+      <a class="admin-back" href="/" target="_blank">
+        <Icon name="lucide:external-link" size={13} />
+        打开官网
+      </a>
     </aside>
+
     <main>
-      <h1>{title}</h1>
+      <header class="admin-pagehead">
+        <div>
+          <h1>{title}</h1>
+          {desc && <p>{desc}</p>}
+        </div>
+        <slot name="actions" />
+      </header>
       <slot />
     </main>
+
+    <div class="admin-toast-wrap" id="admin-toasts"></div>
   </body>
 </html>
 
-<style is:global>
-  * { box-sizing: border-box; }
-  body { margin: 0; display: flex; min-height: 100vh; font-family: system-ui, "Microsoft YaHei", sans-serif; background: #f1f5f9; color: #0f172a; }
-  aside { width: 208px; flex-shrink: 0; background: #0f172a; color: #cbd5e1; padding: 20px 14px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: 0; height: 100vh; }
-  .brand { color: #fff; font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 15px; }
-  .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: #22c55e; }
-  .brand small { font-size: 11px; color: #64748b; font-weight: 400; }
-  aside nav { display: flex; flex-direction: column; gap: 2px; }
-  aside nav a { color: inherit; text-decoration: none; padding: 9px 12px; border-radius: 8px; font-size: 14px; }
-  aside nav a:hover { background: rgba(148, 163, 184, 0.12); }
-  aside nav a.active { background: #4f46e5; color: #fff; }
-  .back { margin-top: auto; color: #94a3b8; font-size: 13px; text-decoration: none; }
-  .back:hover { color: #e2e8f0; }
-  main { flex: 1; padding: 26px 34px; min-width: 0; }
-  h1 { margin: 0 0 20px; font-size: 22px; }
-  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px 20px; margin-bottom: 18px; }
-  .card h2 { margin: 0 0 12px; font-size: 15px; }
-  label { display: block; font-size: 12px; color: #64748b; margin: 10px 0 4px; }
-  input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px; font: inherit; font-size: 14px; background: #fff; }
-  textarea { font-family: ui-monospace, Consolas, monospace; font-size: 13px; resize: vertical; }
-  input:focus, select:focus, textarea:focus { outline: 2px solid #4f46e5; outline-offset: -1px; border-color: #4f46e5; }
-  .btn { display: inline-block; border: 0; border-radius: 7px; padding: 8px 16px; font-size: 13px; cursor: pointer; background: #4f46e5; color: #fff; }
-  .btn:hover { background: #4338ca; }
-  .btn.ghost { background: #e2e8f0; color: #0f172a; }
-  .btn.ghost:hover { background: #cbd5e1; }
-  .btn.danger { background: #fee2e2; color: #b91c1c; }
-  .btn.danger:hover { background: #fecaca; }
-  .btn.small { padding: 5px 10px; font-size: 12px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-  .muted { color: #64748b; font-size: 12px; }
-  .tag { display: inline-block; background: #eef2ff; color: #4f46e5; border-radius: 99px; padding: 2px 9px; font-size: 12px; margin: 1px 3px 1px 0; }
-  .badge { display: inline-block; border-radius: 5px; padding: 2px 7px; font-size: 11px; }
-  .badge.green { background: #dcfce7; color: #15803d; }
-  .badge.gray { background: #f1f5f9; color: #64748b; }
-  .badge.amber { background: #fef3c7; color: #b45309; }
-  .msg { margin-top: 10px; font-size: 13px; display: none; }
-  .msg.show { display: block; }
-  .msg.ok { color: #15803d; }
-  .msg.err { color: #b91c1c; }
-  .row { display: flex; gap: 10px; align-items: center; }
-</style>
+<script>
+  // 轻量 toast：window.adminToast(message, "ok" | "err")
+  function adminToast(message: string, type: "ok" | "err" = "ok") {
+    const wrap = document.getElementById("admin-toasts");
+    if (!wrap) return;
+    const el = document.createElement("div");
+    el.className = `admin-toast ${type}`;
+    el.textContent = message;
+    wrap.appendChild(el);
+    setTimeout(() => {
+      el.classList.add("out");
+      setTimeout(() => el.remove(), 260);
+    }, 2800);
+  }
+  (window as unknown as Record<string, unknown>).adminToast = adminToast;
+</script>

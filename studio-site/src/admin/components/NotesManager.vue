@@ -15,6 +15,9 @@ const editing = ref<number | null>(null);
 const form = ref({ week: 0, date: "", title: "", highlights: "", body: "" });
 const msg = ref("");
 const msgOk = ref(true);
+const armed = ref<number | null>(null);
+const saving = ref(false);
+let armTimer: ReturnType<typeof setTimeout> | undefined;
 
 function blank() {
   return { week: props.nextWeek, date: props.nextMonday, title: "", highlights: "", body: "" };
@@ -23,6 +26,7 @@ function startCreate() {
   creating.value = true;
   editing.value = null;
   form.value = blank();
+  window.scrollTo({ top: 0 });
 }
 function startEdit(n: Note) {
   creating.value = false;
@@ -57,6 +61,7 @@ async function send(url: string, method: string, body?: unknown): Promise<boolea
 }
 
 async function save() {
+  saving.value = true;
   const payload = {
     week: Number(form.value.week),
     date: form.value.date,
@@ -68,11 +73,19 @@ async function save() {
     ? await send("/api/admin/notes", "PUT", { originalWeek: editing.value, ...payload })
     : await send("/api/admin/notes", "POST", payload);
   if (ok) location.reload();
+  saving.value = false;
 }
 
-async function del(week: number) {
-  if (!confirm(`删除第 ${week} 周周记？`)) return;
-  if (await send(`/api/admin/notes?week=${week}`, "DELETE")) location.reload();
+/** 两段式删除：第一次点变成「确认删除」，2.5s 后还原 */
+function del(week: number) {
+  if (armed.value !== week) {
+    armed.value = week;
+    clearTimeout(armTimer);
+    armTimer = setTimeout(() => (armed.value = null), 2500);
+    return;
+  }
+  armed.value = null;
+  send(`/api/admin/notes?week=${week}`, "DELETE").then((ok) => ok && location.reload());
 }
 </script>
 
@@ -96,7 +109,7 @@ async function del(week: number) {
     <label>正文（Markdown）</label>
     <textarea v-model="form.body" rows="10" placeholder="随手记，十分钟以内"></textarea>
     <p>
-      <button class="btn" type="button" @click="save">保存</button>
+      <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
       <button class="btn ghost" type="button" @click="cancel">取消</button>
     </p>
   </div>
@@ -120,7 +133,12 @@ async function del(week: number) {
           <td>{{ n.title }}</td>
           <td>
             <button class="btn small ghost" type="button" @click="startEdit(n)">编辑</button>
-            <button class="btn small danger" type="button" @click="del(n.week)">删除</button>
+            <button
+              class="btn small danger"
+              :class="{ armed: armed === n.week }"
+              type="button"
+              @click="del(n.week)"
+            >{{ armed === n.week ? "确认删除" : "删除" }}</button>
           </td>
         </tr>
       </tbody>

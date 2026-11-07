@@ -20,6 +20,6 @@ const posts = entries
 const today = new Intl.DateTimeFormat("en-CA").format(new Date());
 ---
 
-<AdminLayout title="博客文章" active="/admin/posts">
+<AdminLayout title="博客文章" active="/admin/posts" desc="教程 · 工具 · AI · 复盘 · 写完切回已发布">
   <PostsManager client:load {posts} {today} />
 </AdminLayout>

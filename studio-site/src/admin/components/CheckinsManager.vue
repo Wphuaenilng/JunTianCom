@@ -11,6 +11,9 @@ const editDate = ref("");
 const editTopics = ref("");
 const msg = ref("");
 const msgOk = ref(true);
+const armed = ref<string | null>(null);
+const saving = ref(false);
+let armTimer: ReturnType<typeof setTimeout> | undefined;
 
 async function send(url: string, method: string, body?: unknown): Promise<boolean> {
   const res = await fetch(url, {
@@ -34,9 +37,11 @@ async function add() {
     msgOk.value = false;
     return;
   }
+  saving.value = true;
   if (await send("/api/admin/checkins", "POST", { date: addDate.value, topics })) {
     location.reload();
   }
+  saving.value = false;
 }
 
 function startEdit(date: string, topics: string[]) {
@@ -53,16 +58,25 @@ async function saveEdit() {
     msgOk.value = false;
     return;
   }
+  saving.value = true;
   if (await send("/api/admin/checkins", "PUT", { originalDate: editing.value, date: editDate.value, topics })) {
     location.reload();
   }
+  saving.value = false;
 }
 
-async function del(date: string) {
-  if (!confirm(`删除 ${date} 的打卡记录？`)) return;
-  if (await send(`/api/admin/checkins?date=${encodeURIComponent(date)}`, "DELETE")) {
-    location.reload();
+/** 两段式删除：第一次点变成「确认删除」并脉动提醒，2.5s 后还原 */
+function del(date: string) {
+  if (armed.value !== date) {
+    armed.value = date;
+    clearTimeout(armTimer);
+    armTimer = setTimeout(() => (armed.value = null), 2500);
+    return;
   }
+  armed.value = null;
+  send(`/api/admin/checkins?date=${encodeURIComponent(date)}`, "DELETE").then(
+    (ok) => ok && location.reload(),
+  );
 }
 </script>
 
@@ -74,7 +88,7 @@ async function del(date: string) {
     <label>主题（每行一个）</label>
     <textarea v-model="addTopics" rows="3" placeholder="Rust 所有权&#10;Agent 编排"></textarea>
     <p>
-      <button class="btn" type="button" @click="add">保存</button>
+      <button class="btn" type="button" :disabled="saving" @click="add">{{ saving ? "保存中…" : "保存" }}</button>
       <span class="muted" style="margin-left: 10px">同日期会自动合并主题</span>
     </p>
   </div>
@@ -104,7 +118,12 @@ async function del(date: string) {
             <td><span v-for="t in e.topics" :key="t" class="tag">{{ t }}</span></td>
             <td>
               <button class="btn small ghost" type="button" @click="startEdit(e.date, e.topics)">编辑</button>
-              <button class="btn small danger" type="button" @click="del(e.date)">删除</button>
+              <button
+                class="btn small danger"
+                :class="{ armed: armed === e.date }"
+                type="button"
+                @click="del(e.date)"
+              >{{ armed === e.date ? "确认删除" : "删除" }}</button>
             </td>
           </template>
         </tr>

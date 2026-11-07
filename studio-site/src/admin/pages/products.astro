@@ -27,6 +27,6 @@ const products = listEntries(DIRS.products)
   .sort((a, b) => a.order - b.order);
 ---
 
-<AdminLayout title="产品展示" active="/admin/products">
+<AdminLayout title="产品展示" active="/admin/products" desc="产品橱窗条目 · 状态 · 技术栈 · 指标">
   <ProductsManager client:load products={products} />
 </AdminLayout>

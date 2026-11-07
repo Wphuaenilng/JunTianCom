@@ -21,6 +21,6 @@ monday.setDate(monday.getDate() + 1 - day);
 const nextMonday = new Intl.DateTimeFormat("en-CA").format(monday);
 ---
 
-<AdminLayout title="学习周记" active="/admin/notes">
+<AdminLayout title="学习周记" active="/admin/notes" desc="每周一篇 · 十分钟以内的随手记">
   <NotesManager client:load {notes} nextWeek={maxWeek + 1} {nextMonday} />
 </AdminLayout>

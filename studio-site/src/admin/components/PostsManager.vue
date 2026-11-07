@@ -18,6 +18,9 @@ const creating = ref(false);
 const editing = ref<string | null>(null);
 const msg = ref("");
 const msgOk = ref(true);
+const armed = ref<string | null>(null);
+const saving = ref(false);
+let armTimer: ReturnType<typeof setTimeout> | undefined;
 const form = ref({
   originalSlug: "",
   slug: "",
@@ -86,16 +89,27 @@ async function send(url: string, method: string, body?: unknown): Promise<boolea
 }
 
 async function save() {
+  saving.value = true;
   const payload = { ...form.value, tags: form.value.tags };
   const ok = editing.value
     ? await send("/api/admin/posts", "PUT", payload)
     : await send("/api/admin/posts", "POST", payload);
   if (ok) location.reload();
+  saving.value = false;
 }
 
-async function del(slug: string) {
-  if (!confirm(`删除文章 ${slug}？（不可恢复）`)) return;
-  if (await send(`/api/admin/posts?slug=${encodeURIComponent(slug)}`, "DELETE")) location.reload();
+/** 两段式删除：第一次点变成「确认删除」，2.5s 后还原 */
+function del(slug: string) {
+  if (armed.value !== slug) {
+    armed.value = slug;
+    clearTimeout(armTimer);
+    armTimer = setTimeout(() => (armed.value = null), 2500);
+    return;
+  }
+  armed.value = null;
+  send(`/api/admin/posts?slug=${encodeURIComponent(slug)}`, "DELETE").then(
+    (ok) => ok && location.reload(),
+  );
 }
 </script>
 
@@ -133,7 +147,7 @@ async function del(slug: string) {
     <label>正文（Markdown）</label>
     <textarea v-model="form.body" rows="18"></textarea>
     <p>
-      <button class="btn" type="button" @click="save">保存</button>
+      <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
       <button class="btn ghost" type="button" @click="cancel">取消</button>
     </p>
   </div>
@@ -162,7 +176,12 @@ async function del(slug: string) {
           </td>
           <td>
             <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
-            <button class="btn small danger" type="button" @click="del(p.slug)">删除</button>
+            <button
+              class="btn small danger"
+              :class="{ armed: armed === p.slug }"
+              type="button"
+              @click="del(p.slug)"
+            >{{ armed === p.slug ? "确认删除" : "删除" }}</button>
           </td>
         </tr>
       </tbody>
