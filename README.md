@@ -18,7 +18,20 @@ npm run build    # 产物在 studio-site/dist
 npm run checkin -- "Rust 所有权" "Agent 编排"   # 本地打卡,断网可用
 npm run new:week                                # 生成本周周记模板
 npm run new:post -- "文章标题" [slug]           # 生成博客草稿(draft:true)
+
+# 可视化后台（仅 npm run dev 时存在）
+# 浏览器打开 http://localhost:4321/admin
+# 可管理:打卡记录 / 学习周记 / 博客文章 / 产品展示 / 路线进度 / 站点配置
 ```
+
+## 站点后台（dev 专属）
+
+`npm run dev` 后访问 **http://localhost:4321/admin**（仅本机可访问，`npm run build` 产物中不存在后台）。
+
+- 覆盖：打卡记录、学习周记、博客文章、产品展示、学习路线进度、站点配置（品牌信息/关于页/合作方式）
+- 后台保存后，开着官网的页面即时热更新
+- 修改不会自动提交 git；在「仪表盘」点「提交并推送」一键 commit + push（离线时数据不丢，稍后手动 push）
+- 实现位于 `src/admin/`（集成按 `command === "dev"` 注入路由，生产构建零暴露）
 
 ## 学习打卡（热力图数据来源）
 

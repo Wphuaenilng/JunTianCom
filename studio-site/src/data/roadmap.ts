@@ -1,6 +1,9 @@
 /**
- * 年度学习路线（不走 Markdown，结构化数据，改进度只改这里）
+ * 年度学习路线 —— 数据在 roadmap.json（后台「路线进度」模块可编辑），
+ * 本文件只负责类型与导出，站点页面照常从这里导入。
  */
+import roadmapData from "./roadmap.json";
+
 export type RoadmapColor = "primary" | "amber" | "green";
 
 export interface Milestone {
@@ -16,55 +19,14 @@ export interface RoadmapItem {
   milestones: Milestone[];
 }
 
-export const ROADMAP: RoadmapItem[] = [
-  {
-    title: "大模型应用开发（Agent / RAG）",
-    icon: "brain-circuit",
-    color: "primary",
-    progress: 60,
-    milestones: [
-      { text: "Prompt 工程与结构化输出", done: true },
-      { text: "RAG 全链路：分块 / 混检 / 重排", done: true },
-      { text: "多 Agent 协作调研（已发文章）", done: true },
-      { text: "Agent 评测与可观测性", done: false },
-    ],
-  },
-  {
-    title: "Rust 系统编程",
-    icon: "cpu",
-    color: "amber",
-    progress: 25,
-    milestones: [
-      { text: "所有权与借用检查器", done: true },
-      { text: "Tokio 异步实战", done: false },
-      { text: "用 Rust 重写 RAG 服务", done: false },
-    ],
-  },
-  {
-    title: "雅思 7.0（六个月计划）",
-    icon: "graduation-cap",
-    color: "green",
-    progress: 40,
-    milestones: [
-      { text: "词汇量 5.5k，听力 7.0", done: true },
-      { text: "口语 Part 2 素材库（进行中）", done: false },
-      { text: "写作批改 20 篇", done: false },
-    ],
-  },
-];
+export interface ReadingItem {
+  title: string;
+  progress: string;
+  icon: string;
+  grad: string;
+}
+
+export const ROADMAP: RoadmapItem[] = roadmapData.roadmap as RoadmapItem[];
 
 /** 正在读的书 */
-export const READING = [
-  {
-    title: "Rust 程序设计（第2版）",
-    progress: "读到 61%",
-    icon: "cpu",
-    grad: "linear-gradient(135deg,#d97706,#fbbf24)",
-  },
-  {
-    title: "AI Engineering",
-    progress: "读到 34%",
-    icon: "brain-circuit",
-    grad: "linear-gradient(135deg,#6d7cff,#8b5cf6)",
-  },
-];
+export const READING: ReadingItem[] = roadmapData.reading as ReadingItem[];

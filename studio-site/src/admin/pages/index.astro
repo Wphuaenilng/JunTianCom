@@ -1,0 +1,86 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import { execFileSync } from "node:child_process";
+import { DIRS, REPO_ROOT, listEntries, readJSON } from "../lib/store.js";
+
+const checkins = readJSON<{ checkins: { date: string; topics: string[] }[] }>(
+  "src/data/checkins.json",
+);
+const notes = listEntries(DIRS.learning);
+const posts = listEntries(DIRS.blog);
+const products = listEntries(DIRS.products);
+const draftCount = posts.filter((p) => p.data.draft === true).length;
+
+function gitStatus(): { dirty: number; branch: string } {
+  try {
+    const out = execFileSync(
+      "git",
+      ["status", "--porcelain", "--", "studio-site/src/data", "studio-site/src/content"],
+      { cwd: REPO_ROOT },
+    ).toString().trim();
+    const branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+      cwd: REPO_ROOT,
+    }).toString().trim();
+    return { dirty: out ? out.split("\n").length : 0, branch };
+  } catch {
+    return { dirty: -1, branch: "?" };
+  }
+}
+const { dirty, branch } = gitStatus();
+---
+
+<AdminLayout title="仪表盘" active="/admin">
+  <div class="stat-grid">
+    <div class="stat"><b>{checkins.checkins.length}</b><span>打卡天数</span></div>
+    <div class="stat"><b>{notes.length}</b><span>学习周记</span></div>
+    <div class="stat"><b>{posts.length}</b><span>博客文章（草稿 {draftCount}）</span></div>
+    <div class="stat"><b>{products.length}</b><span>产品条目</span></div>
+  </div>
+
+  <div class="card">
+    <h2>git 同步</h2>
+    <p class="muted">
+      分支 {branch} · 数据与内容目录中 {dirty < 0 ? "状态未知（git 不可用）" : dirty === 0 ? "没有待提交的变更" : `${dirty} 个文件待提交`}
+    </p>
+    <button class="btn" id="sync" type="button">提交并推送</button>
+    <p class="msg" id="sync-msg"></p>
+  </div>
+
+  <div class="card">
+    <h2>提示</h2>
+    <p class="muted">
+      后台仅存在于 npm run dev；编辑保存后，开着官网的页面会即时热更新。修改不会自动提交 git，确认无误后在这里点「提交并推送」（或自行 git push）。
+    </p>
+  </div>
+</AdminLayout>
+
+<style>
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+  .stat { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 18px; }
+  .stat b { font-size: 26px; }
+  .stat span { display: block; color: #64748b; font-size: 12px; margin-top: 2px; }
+</style>
+
+<script>
+  const btn = document.getElementById("sync") as HTMLButtonElement | null;
+  const msg = document.getElementById("sync-msg");
+  btn?.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "同步中…";
+    try {
+      const res = await fetch("/api/admin/git-sync", { method: "POST" });
+      const data = (await res.json()) as { ok: boolean; message: string };
+      if (msg) {
+        msg.textContent = data.message;
+        msg.className = `msg show ${data.ok ? "ok" : "err"}`;
+      }
+    } catch {
+      if (msg) {
+        msg.textContent = "请求失败";
+        msg.className = "msg show err";
+      }
+    }
+    btn.disabled = false;
+    btn.textContent = "提交并推送";
+  });
+</script>

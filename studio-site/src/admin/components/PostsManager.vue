@@ -1,0 +1,173 @@
+<script setup lang="ts">
+import { ref } from "vue";
+
+interface Post {
+  slug: string;
+  title: string;
+  description: string;
+  pubDate: string;
+  category: string;
+  tags: string[];
+  draft: boolean;
+  pinned: boolean;
+  body: string;
+}
+const props = defineProps<{ posts: Post[]; today: string }>();
+
+const creating = ref(false);
+const editing = ref<string | null>(null);
+const msg = ref("");
+const msgOk = ref(true);
+const form = ref({
+  originalSlug: "",
+  slug: "",
+  title: "",
+  description: "",
+  pubDate: props.today,
+  category: "随笔",
+  tags: "",
+  draft: true,
+  pinned: false,
+  body: "",
+});
+
+function startCreate() {
+  creating.value = true;
+  editing.value = null;
+  form.value = {
+    originalSlug: "",
+    slug: "",
+    title: "",
+    description: "",
+    pubDate: props.today,
+    category: "随笔",
+    tags: "",
+    draft: true,
+    pinned: false,
+    body: "## 问题背景\n\n## 我的方案\n\n## 关键代码 / 步骤\n\n## 踩坑记录\n\n## 总结与改进方向\n",
+  };
+  window.scrollTo({ top: 0 });
+}
+function startEdit(p: Post) {
+  creating.value = false;
+  editing.value = p.slug;
+  form.value = {
+    originalSlug: p.slug,
+    slug: p.slug,
+    title: p.title,
+    description: p.description,
+    pubDate: p.pubDate,
+    category: p.category,
+    tags: p.tags.join("\n"),
+    draft: p.draft,
+    pinned: p.pinned,
+    body: p.body,
+  };
+  window.scrollTo({ top: 0 });
+}
+function cancel() {
+  creating.value = false;
+  editing.value = null;
+}
+
+async function send(url: string, method: string, body?: unknown): Promise<boolean> {
+  const res = await fetch(url, {
+    method,
+    headers: { "content-type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (!res.ok) {
+    msg.value = data.error ?? "请求失败";
+    msgOk.value = false;
+    return false;
+  }
+  return true;
+}
+
+async function save() {
+  const payload = { ...form.value, tags: form.value.tags };
+  const ok = editing.value
+    ? await send("/api/admin/posts", "PUT", payload)
+    : await send("/api/admin/posts", "POST", payload);
+  if (ok) location.reload();
+}
+
+async function del(slug: string) {
+  if (!confirm(`删除文章 ${slug}？（不可恢复）`)) return;
+  if (await send(`/api/admin/posts?slug=${encodeURIComponent(slug)}`, "DELETE")) location.reload();
+}
+</script>
+
+<template>
+  <div v-if="creating || editing" class="card">
+    <h2>{{ editing ? "编辑文章" : "新建文章草稿" }}</h2>
+    <div class="row">
+      <div style="flex: 2">
+        <label>标题</label>
+        <input v-model="form.title" />
+      </div>
+      <div style="flex: 1">
+        <label>slug（留空自动生成）</label>
+        <input v-model="form.slug" placeholder="rag-accuracy-notes" />
+      </div>
+    </div>
+    <label>描述</label>
+    <input v-model="form.description" placeholder="一句话描述这篇文章解决什么问题" />
+    <div class="row">
+      <div style="width: 160px">
+        <label>发布日期</label>
+        <input v-model="form.pubDate" type="date" />
+      </div>
+      <div style="width: 160px">
+        <label>分类</label>
+        <input v-model="form.category" />
+      </div>
+      <div style="display: flex; align-items: flex-end; gap: 16px; padding-bottom: 8px">
+        <label style="margin: 0"><input v-model="form.draft" type="checkbox" style="width: auto" /> 草稿（不显示在站点）</label>
+        <label style="margin: 0"><input v-model="form.pinned" type="checkbox" style="width: auto" /> 置顶</label>
+      </div>
+    </div>
+    <label>标签（每行一个）</label>
+    <textarea v-model="form.tags" rows="2"></textarea>
+    <label>正文（Markdown）</label>
+    <textarea v-model="form.body" rows="18"></textarea>
+    <p>
+      <button class="btn" type="button" @click="save">保存</button>
+      <button class="btn ghost" type="button" @click="cancel">取消</button>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>文章列表（{{ props.posts.length }} 篇）</h2>
+    <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建文章</button>
+    <table style="margin-top: 10px">
+      <thead>
+        <tr>
+          <th>标题</th>
+          <th style="width: 110px">日期</th>
+          <th style="width: 90px">分类</th>
+          <th style="width: 130px">状态</th>
+          <th style="width: 150px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="p in props.posts" :key="p.slug">
+          <td>{{ p.title }}<br /><span class="muted">{{ p.slug }}</span></td>
+          <td>{{ p.pubDate }}</td>
+          <td>{{ p.category }}</td>
+          <td>
+            <span class="badge" :class="p.draft ? 'gray' : 'green'">{{ p.draft ? "草稿" : "已发布" }}</span>
+            <span v-if="p.pinned" class="badge amber" style="margin-left: 4px">置顶</span>
+          </td>
+          <td>
+            <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
+            <button class="btn small danger" type="button" @click="del(p.slug)">删除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+</template>

@@ -1,0 +1,117 @@
+<script setup lang="ts">
+import { ref } from "vue";
+
+const props = defineProps<{ entries: { date: string; topics: string[] }[] }>();
+
+const today = new Date().toLocaleDateString("sv-SE");
+const addDate = ref(today);
+const addTopics = ref("");
+const editing = ref<string | null>(null);
+const editDate = ref("");
+const editTopics = ref("");
+const msg = ref("");
+const msgOk = ref(true);
+
+async function send(url: string, method: string, body?: unknown): Promise<boolean> {
+  const res = await fetch(url, {
+    method,
+    headers: { "content-type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = (await res.json().catch(() => ({}))) as { error?: string };
+  if (!res.ok) {
+    msg.value = data.error ?? "请求失败";
+    msgOk.value = false;
+    return false;
+  }
+  return true;
+}
+
+async function add() {
+  const topics = addTopics.value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  if (!addDate.value || topics.length === 0) {
+    msg.value = "请填写日期和至少一个主题";
+    msgOk.value = false;
+    return;
+  }
+  if (await send("/api/admin/checkins", "POST", { date: addDate.value, topics })) {
+    location.reload();
+  }
+}
+
+function startEdit(date: string, topics: string[]) {
+  editing.value = date;
+  editDate.value = date;
+  editTopics.value = topics.join("\n");
+  msg.value = "";
+}
+
+async function saveEdit() {
+  const topics = editTopics.value.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  if (topics.length === 0) {
+    msg.value = "至少一个主题";
+    msgOk.value = false;
+    return;
+  }
+  if (await send("/api/admin/checkins", "PUT", { originalDate: editing.value, date: editDate.value, topics })) {
+    location.reload();
+  }
+}
+
+async function del(date: string) {
+  if (!confirm(`删除 ${date} 的打卡记录？`)) return;
+  if (await send(`/api/admin/checkins?date=${encodeURIComponent(date)}`, "DELETE")) {
+    location.reload();
+  }
+}
+</script>
+
+<template>
+  <div class="card">
+    <h2>新增 / 合并打卡</h2>
+    <label>日期</label>
+    <input v-model="addDate" type="date" />
+    <label>主题（每行一个）</label>
+    <textarea v-model="addTopics" rows="3" placeholder="Rust 所有权&#10;Agent 编排"></textarea>
+    <p>
+      <button class="btn" type="button" @click="add">保存</button>
+      <span class="muted" style="margin-left: 10px">同日期会自动合并主题</span>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>全部记录（{{ props.entries.length }} 天）</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 130px">日期</th>
+          <th>主题</th>
+          <th style="width: 150px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="e in props.entries" :key="e.date">
+          <template v-if="editing === e.date">
+            <td><input v-model="editDate" type="date" /></td>
+            <td><textarea v-model="editTopics" rows="3"></textarea></td>
+            <td>
+              <button class="btn small" type="button" @click="saveEdit">保存</button>
+              <button class="btn small ghost" type="button" @click="editing = null">取消</button>
+            </td>
+          </template>
+          <template v-else>
+            <td>{{ e.date }}</td>
+            <td><span v-for="t in e.topics" :key="t" class="tag">{{ t }}</span></td>
+            <td>
+              <button class="btn small ghost" type="button" @click="startEdit(e.date, e.topics)">编辑</button>
+              <button class="btn small danger" type="button" @click="del(e.date)">删除</button>
+            </td>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+    <p v-if="props.entries.length === 0" class="muted">还没有打卡记录</p>
+  </div>
+
+  <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+</template>

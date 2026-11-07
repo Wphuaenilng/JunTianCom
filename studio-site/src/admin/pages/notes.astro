@@ -1,0 +1,26 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import NotesManager from "../components/NotesManager.vue";
+import { DIRS, listEntries } from "../lib/store.js";
+
+const entries = listEntries(DIRS.learning);
+const notes = entries
+  .map((e) => ({
+    week: Number(e.data.week),
+    date: String(e.data.date ?? "").slice(0, 10),
+    title: String(e.data.title ?? ""),
+    highlights: Array.isArray(e.data.highlights) ? e.data.highlights.map(String) : [],
+    body: e.body,
+  }))
+  .sort((a, b) => b.week - a.week);
+
+const maxWeek = notes.reduce((m, n) => Math.max(m, n.week || 0), 0);
+const monday = new Date();
+const day = monday.getDay() || 7;
+monday.setDate(monday.getDate() + 1 - day);
+const nextMonday = new Intl.DateTimeFormat("en-CA").format(monday);
+---
+
+<AdminLayout title="学习周记" active="/admin/notes">
+  <NotesManager client:load {notes} nextWeek={maxWeek + 1} {nextMonday} />
+</AdminLayout>

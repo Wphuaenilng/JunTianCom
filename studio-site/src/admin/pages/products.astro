@@ -1,0 +1,32 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import ProductsManager from "../components/ProductsManager.vue";
+import { DIRS, listEntries } from "../lib/store.js";
+
+const products = listEntries(DIRS.products)
+  .map((e) => {
+    const links = (e.data.links ?? {}) as { site?: unknown; repo?: unknown };
+    const metrics = Array.isArray(e.data.metrics)
+      ? (e.data.metrics as { label?: unknown }[]).map((m) => String(m.label ?? ""))
+      : [];
+    return {
+      slug: e.slug,
+      name: String(e.data.name ?? ""),
+      tagline: String(e.data.tagline ?? ""),
+      cover: String(e.data.cover ?? "primary"),
+      icon: String(e.data.icon ?? "box"),
+      status: String(e.data.status ?? "building"),
+      stack: Array.isArray(e.data.stack) ? e.data.stack.map(String) : [],
+      metrics,
+      site: String(links.site ?? ""),
+      repo: String(links.repo ?? ""),
+      order: Number(e.data.order ?? 99),
+      body: e.body,
+    };
+  })
+  .sort((a, b) => a.order - b.order);
+---
+
+<AdminLayout title="产品展示" active="/admin/products">
+  <ProductsManager client:load products={products} />
+</AdminLayout>

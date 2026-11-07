@@ -1,0 +1,14 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import CheckinsManager from "../components/CheckinsManager.vue";
+import { readJSON } from "../lib/store.js";
+
+const data = readJSON<{ checkins: { date: string; topics: string[] }[] }>(
+  "src/data/checkins.json",
+);
+const entries = [...data.checkins].sort((a, b) => b.date.localeCompare(a.date));
+---
+
+<AdminLayout title="打卡记录" active="/admin/checkins">
+  <CheckinsManager client:load entries={entries} />
+</AdminLayout>

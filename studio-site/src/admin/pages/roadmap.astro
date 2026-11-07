@@ -1,0 +1,9 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import RoadmapManager from "../components/RoadmapManager.vue";
+import { READING, ROADMAP } from "../../data/roadmap";
+---
+
+<AdminLayout title="路线进度" active="/admin/roadmap">
+  <RoadmapManager client:load roadmap={ROADMAP} reading={READING} />
+</AdminLayout>

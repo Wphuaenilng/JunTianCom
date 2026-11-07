@@ -1,0 +1,19 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import SettingsForm from "../components/SettingsForm.vue";
+import settingsData from "../../data/site-settings.json";
+
+const identity = Object.fromEntries(
+  Object.entries(settingsData.identity).map(([k, v]) => [k, String(v)]),
+);
+---
+
+<AdminLayout title="站点配置" active="/admin/settings">
+  <SettingsForm
+    client:load
+    identity={identity}
+    skills={settingsData.skills}
+    timeline={settingsData.timeline}
+    coops={settingsData.coops}
+  />
+</AdminLayout>

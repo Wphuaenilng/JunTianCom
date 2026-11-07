@@ -1,0 +1,25 @@
+---
+import AdminLayout from "../AdminLayout.astro";
+import PostsManager from "../components/PostsManager.vue";
+import { DIRS, listEntries } from "../lib/store.js";
+
+const entries = listEntries(DIRS.blog);
+const posts = entries
+  .map((e) => ({
+    slug: e.slug,
+    title: String(e.data.title ?? ""),
+    description: String(e.data.description ?? ""),
+    pubDate: String(e.data.pubDate ?? "").slice(0, 10),
+    category: String(e.data.category ?? ""),
+    tags: Array.isArray(e.data.tags) ? e.data.tags.map(String) : [],
+    draft: e.data.draft === true,
+    pinned: e.data.pinned === true,
+    body: e.body,
+  }))
+  .sort((a, b) => b.pubDate.localeCompare(a.pubDate));
+const today = new Intl.DateTimeFormat("en-CA").format(new Date());
+---
+
+<AdminLayout title="博客文章" active="/admin/posts">
+  <PostsManager client:load {posts} {today} />
+</AdminLayout>
