@@ -57,14 +57,15 @@ export function useTheme() {
       update();
       return;
     }
-    const rect = origin.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const vw = window.visualViewport?.width ?? window.innerWidth;
-    const vh = window.visualViewport?.height ?? window.innerHeight;
-    const maxRadius = Math.hypot(Math.max(cx, vw - cx), Math.max(cy, vh - cy));
-    const transition = doc.startViewTransition(update);
-    transition.ready
+    try {
+      const rect = origin.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const vw = window.visualViewport?.width ?? window.innerWidth;
+      const vh = window.visualViewport?.height ?? window.innerHeight;
+      const maxRadius = Math.hypot(Math.max(cx, vw - cx), Math.max(cy, vh - cy));
+      const transition = doc.startViewTransition(update);
+      transition.ready
       .then(() => {
         document.documentElement.animate(
           {
@@ -82,6 +83,11 @@ export function useTheme() {
         );
       })
       .catch(() => {});
+    } catch {
+      // ClientRouter 的过渡机制与手动 startViewTransition 冲突时会同步抛错,
+      // 兜底直接执行更新,保证主题切换功能不受影响
+      update();
+    }
   }
 
   return { theme, accent, applyTheme, applyAccent, withReveal };

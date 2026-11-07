@@ -31,22 +31,30 @@ const props = Astro.props;
       title={SITE.name}
       href="/rss.xml"
     />
-    <!-- 主题初始化：先于首帧执行，避免明暗闪屏 -->
+    <!-- 主题初始化：先于首帧执行；astro:after-swap 后从 localStorage 重设(swap 会重置 html 属性) -->
     <script is:inline>
       (function () {
-        try {
-          var stored = localStorage.getItem("starisle-theme");
-          var prefersLight =
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: light)").matches;
-          document.documentElement.dataset.theme =
-            stored || (prefersLight ? "light" : "dark");
-          var accent = localStorage.getItem("starisle-accent");
-          if (accent) document.documentElement.dataset.accent = accent;
-          document.documentElement.classList.add("js");
-        } catch (e) {
-          document.documentElement.dataset.theme = "dark";
+        function applyTheme() {
+          try {
+            var stored = localStorage.getItem("starisle-theme");
+            var prefersLight =
+              window.matchMedia &&
+              window.matchMedia("(prefers-color-scheme: light)").matches;
+            document.documentElement.dataset.theme =
+              stored || (prefersLight ? "light" : "dark");
+            var accent = localStorage.getItem("starisle-accent");
+            if (accent) {
+              document.documentElement.dataset.accent = accent;
+            } else {
+              delete document.documentElement.dataset.accent;
+            }
+            document.documentElement.classList.add("js");
+          } catch (e) {
+            document.documentElement.dataset.theme = "dark";
+          }
         }
+        applyTheme();
+        document.addEventListener("astro:after-swap", applyTheme);
       })();
     </script>
     <BaseHead {...props} />
