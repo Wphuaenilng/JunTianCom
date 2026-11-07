@@ -1,7 +1,7 @@
 ---
 import AdminLayout from "../AdminLayout.astro";
 import PostsManager from "../components/PostsManager.vue";
-import { DIRS, listEntries } from "../lib/store.js";
+import { DIRS, dateStr, listEntries } from "../lib/store.js";
 
 const entries = listEntries(DIRS.blog);
 const posts = entries
@@ -9,7 +9,7 @@ const posts = entries
     slug: e.slug,
     title: String(e.data.title ?? ""),
     description: String(e.data.description ?? ""),
-    pubDate: String(e.data.pubDate ?? "").slice(0, 10),
+    pubDate: dateStr(e.data.pubDate),
     category: String(e.data.category ?? ""),
     tags: Array.isArray(e.data.tags) ? e.data.tags.map(String) : [],
     draft: e.data.draft === true,

@@ -240,6 +240,8 @@ body.admin main { margin-left: 236px; padding: 26px 34px 64px; min-width: 0; }
 .btn.danger:hover { background: rgba(248, 113, 113, 0.2); transform: translateY(-1px); }
 .btn.danger.armed { background: #ef4444; color: #fff; border-color: #ef4444; animation: admPulse 1.1s infinite; }
 .btn.small { padding: 5px 11px; font-size: 12px; border-radius: 7px; }
+/* 相邻按钮统一留出间距(表格操作列/表单按钮组) */
+.btn + .btn { margin-left: 8px; }
 
 /* ---------- 表单 ---------- */
 label { display: block; font-size: 11.5px; color: var(--adm-muted); margin: 12px 0 5px; letter-spacing: 0.02em; }

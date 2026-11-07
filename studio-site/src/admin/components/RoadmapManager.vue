@@ -54,7 +54,7 @@ async function save() {
 <template>
   <div v-for="(item, i) in roadmap" :key="i" class="card">
     <div class="row">
-      <div style="flex: 1">
+      <div style="flex: 1; max-width: 520px">
         <label>路线标题</label>
         <input v-model="item.title" />
       </div>

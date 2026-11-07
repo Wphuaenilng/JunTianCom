@@ -87,16 +87,19 @@ function del(date: string) {
       <div style="width: 190px; flex-shrink: 0">
         <label>日期</label>
         <input v-model="addDate" type="date" />
+        <button
+          class="btn"
+          type="button"
+          :disabled="saving"
+          style="width: 100%; margin-top: 10px"
+          @click="add"
+        >{{ saving ? "保存中…" : "保存" }}</button>
       </div>
       <div class="flex-1">
-        <label>主题（每行一个）</label>
-        <textarea v-model="addTopics" rows="3" placeholder="Rust 所有权&#10;Agent 编排"></textarea>
+        <label>主题（每行一个 · 同日自动合并）</label>
+        <textarea v-model="addTopics" rows="4" placeholder="Rust 所有权&#10;Agent 编排"></textarea>
       </div>
     </div>
-    <p>
-      <button class="btn" type="button" :disabled="saving" @click="add">{{ saving ? "保存中…" : "保存" }}</button>
-      <span class="muted" style="margin-left: 10px">同日期会自动合并主题</span>
-    </p>
   </div>
 
   <div class="card">

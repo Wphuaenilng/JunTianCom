@@ -134,3 +134,10 @@ export function linesToArray(value: unknown): string[] {
 export function validDate(s: unknown): s is string {
   return typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
 }
+
+/** frontmatter 日期统一转 YYYY-MM-DD(gray-matter 会把 YAML 日期解析成 Date) */
+export function dateStr(value: unknown): string {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  if (typeof value === "string") return value.slice(0, 10);
+  return "";
+}

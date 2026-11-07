@@ -1,13 +1,13 @@
 ---
 import AdminLayout from "../AdminLayout.astro";
 import NotesManager from "../components/NotesManager.vue";
-import { DIRS, listEntries } from "../lib/store.js";
+import { DIRS, dateStr, listEntries } from "../lib/store.js";
 
 const entries = listEntries(DIRS.learning);
 const notes = entries
   .map((e) => ({
     week: Number(e.data.week),
-    date: String(e.data.date ?? "").slice(0, 10),
+    date: dateStr(e.data.date),
     title: String(e.data.title ?? ""),
     highlights: Array.isArray(e.data.highlights) ? e.data.highlights.map(String) : [],
     body: e.body,
