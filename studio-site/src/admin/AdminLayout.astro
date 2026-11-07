@@ -166,4 +166,11 @@ const isActive = (href: string) =>
   initChrome();
   // ClientRouter swap 后重新初始化;astro:page-load 首次加载也会触发,initChrome 幂等
   document.addEventListener("astro:page-load", initChrome);
+
+  // 同官网:精准静默 VT 中断的无害报错(切换成功,仅无淡入动画)
+  window.addEventListener("unhandledrejection", (e) => {
+    if (String(e.reason?.message ?? "").includes("Transition was aborted")) {
+      e.preventDefault();
+    }
+  });
 </script>

@@ -45,6 +45,10 @@
   html {
     scroll-behavior: smooth;
   }
+  /* 视图过渡期间禁用平滑滚动:swap 后的滚动回顶若带动画会中止过渡 */
+  html[data-astro-transition] {
+    scroll-behavior: auto;
+  }
   body {
     font-family: var(--font-body);
     background: var(--bg);

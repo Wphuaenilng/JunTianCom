@@ -147,12 +147,16 @@ const jsonld = {
 
 <script>
   // 编辑器卡翻面时，让三个浮动徽章抖一下（监听 EditorCard 派发的事件）
-  const chips = document.querySelectorAll<HTMLElement>(".editor-wrap .float-chip");
-  document.addEventListener("editor:flip", () => {
-    chips.forEach((chip, i) => {
-      chip.classList.remove("chip-jolt");
-      void chip.offsetWidth; // 强制重排以重启动画
-      setTimeout(() => chip.classList.add("chip-jolt"), i * 70);
+  // 全局只绑定一次(document 级),handler 内实时查询 chips——swap 回首页后依然可用
+  if (!document.documentElement.dataset.flipBound) {
+    document.documentElement.dataset.flipBound = "1";
+    document.addEventListener("editor:flip", () => {
+      const chips = document.querySelectorAll<HTMLElement>(".editor-wrap .float-chip");
+      chips.forEach((chip, i) => {
+        chip.classList.remove("chip-jolt");
+        void chip.offsetWidth; // 强制重排以重启动画
+        setTimeout(() => chip.classList.add("chip-jolt"), i * 70);
+      });
     });
-  });
+  }
 </script>

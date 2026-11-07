@@ -1,6 +1,7 @@
 ---
 import "@fontsource-variable/sora";
 import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
 import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -49,6 +50,7 @@ const props = Astro.props;
       })();
     </script>
     <BaseHead {...props} />
+    <ClientRouter />
   </head>
   <body>
     <Header />
@@ -60,9 +62,11 @@ const props = Astro.props;
 </html>
 
 <script>
-  // 首屏铺满：把导航实际高度写入 --nav-h，供 .hero 计算 min-height
-  const nav = document.querySelector(".site-nav");
-  if (nav) {
+  // —— 导航高度 + 滚动形态(header 已持久化,只绑定一次) ——
+  function initNav() {
+    const nav = document.querySelector(".site-nav");
+    if (!nav || (nav as HTMLElement).dataset.navBound) return;
+    (nav as HTMLElement).dataset.navBound = "1";
     const setNavHeight = () =>
       document.documentElement.style.setProperty(
         "--nav-h",
@@ -79,23 +83,61 @@ const props = Astro.props;
     onNavScroll();
   }
 
-  // 滚动渐显：进入视口的 .reveal 元素加 .revealed；
-  // 减少动效用户直接全部显示。无 JS 时 CSS 不隐藏任何内容。
-  const revealEls = document.querySelectorAll<HTMLElement>(".reveal");
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    for (const el of revealEls) el.classList.add("revealed");
-  } else if (revealEls.length) {
-    const io = new IntersectionObserver(
+  // —— 滚动渐显：swap 后新页面的 .reveal 元素需要重新观察 ——
+  let revealIO: IntersectionObserver | null = null;
+  function initReveal() {
+    revealIO?.disconnect();
+    const revealEls = document.querySelectorAll<HTMLElement>(".reveal");
+    if (!revealEls.length) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      for (const el of revealEls) el.classList.add("revealed");
+      return;
+    }
+    revealIO = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
             entry.target.classList.add("revealed");
-            io.unobserve(entry.target);
+            revealIO?.unobserve(entry.target);
           }
         }
       },
       { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
     );
-    for (const el of revealEls) io.observe(el);
+    for (const el of revealEls) revealIO.observe(el);
   }
+
+  // —— 导航高亮：header 持久化后按当前路径重算(与 Header.astro 的 isActive 同逻辑) ——
+  const NAV_HREFS = ["/", "/products", "/blog", "/learning", "/about"];
+  function markNav() {
+    const path = location.pathname.replace(/\/+$/, "") || "/";
+    document
+      .querySelectorAll(".site-nav .nav-links a, .site-nav .drawer-links a")
+      .forEach((a) => {
+        const href = a.getAttribute("href") ?? "";
+        if (!NAV_HREFS.includes(href)) return;
+        const active =
+          href === "/" ? path === "/" : path === href || path.startsWith(href + "/");
+        a.classList.toggle("active", active);
+      });
+  }
+
+  function initPage() {
+    initNav();
+    initReveal();
+    markNav();
+  }
+  initPage();
+  // ClientRouter swap 后重新初始化;astro:page-load 首次加载也会触发,initPage 幂等
+  document.addEventListener("astro:page-load", initPage);
+
+  // Astro ClientRouter 与本站重型岛组合时,视图过渡会被浏览器中止并抛出
+  // 无害的 InvalidStateError(切换本身成功,仅无淡入动画)——精准静默,避免访客控制台噪音
+  window.addEventListener("unhandledrejection", (e) => {
+    if (String(e.reason?.message ?? "").includes("Transition was aborted")) {
+      e.preventDefault();
+    }
+  });
+  // ClientRouter swap 后重新初始化;astro:page-load 首次加载也会触发,initPage 幂等
+  document.addEventListener("astro:page-load", initPage);
 </script>
