@@ -23,18 +23,25 @@ export function useAdminTheme() {
   return { isDark, nTheme };
 }
 
-export const adminThemeOverrides: GlobalThemeOverrides = {
-  common: {
-    primaryColor: "#6d7cff",
-    primaryColorHover: "#8b93ff",
-    primaryColorPressed: "#5a67e6",
-    primaryColorSuppl: "#38d9f5",
-    infoColor: "#38d9f5",
-    successColor: "#34d399",
-    warningColor: "#fbbf24",
-    errorColor: "#f87171",
-    borderRadius: "9px",
-    fontSize: "13.5px",
-    fontFamily: 'system-ui, "Microsoft YaHei", "PingFang SC", sans-serif',
-  },
-};
+export function adminThemeOverrides(isDark: boolean): GlobalThemeOverrides {
+  return {
+    common: {
+      primaryColor: "#6d7cff",
+      primaryColorHover: "#8b93ff",
+      primaryColorPressed: "#5a67e6",
+      primaryColorSuppl: "#38d9f5",
+      infoColor: "#38d9f5",
+      successColor: "#34d399",
+      warningColor: "#fbbf24",
+      errorColor: "#f87171",
+      borderRadius: "9px",
+      fontSize: "13.5px",
+      fontFamily: 'system-ui, "Microsoft YaHei", "PingFang SC", sans-serif',
+    },
+    // 弹窗卡片对齐后台卡片色(仅暗色需要,浅色用默认白)
+    Card: {
+      borderRadius: "14px",
+      ...(isDark ? { color: "#101827" } : {}),
+    },
+  };
+}

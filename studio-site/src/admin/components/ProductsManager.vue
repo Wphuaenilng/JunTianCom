@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { NConfigProvider, NInput, NInputNumber, NSelect } from "naive-ui";
+import { computed, ref } from "vue";
+import { NConfigProvider, NInput, NInputNumber, NModal, NSelect } from "naive-ui";
 import { adminThemeOverrides, useAdminTheme } from "../lib/naive";
 
-const { nTheme } = useAdminTheme();
+const { isDark, nTheme } = useAdminTheme();
 
 interface Product {
   slug: string;
@@ -27,14 +27,16 @@ const statusOptions = [
   { label: "beta（内测）", value: "beta" },
 ];
 
-const creating = ref(false);
-const editing = ref<string | null>(null);
+const modalOpen = ref(false);
+const editing = ref<string | null>(null); // 原 slug,null = 新增
 const msg = ref("");
 const msgOk = ref(true);
 const armed = ref<string | null>(null);
 const saving = ref(false);
 let armTimer: ReturnType<typeof setTimeout> | undefined;
 const form = ref(blank());
+
+const modalTitle = computed(() => (editing.value ? `编辑产品 · ${editing.value}` : "新建产品"));
 
 function blank() {
   return {
@@ -53,14 +55,13 @@ function blank() {
     body: "## 它解决什么问题\n\n- ",
   };
 }
-function startCreate() {
-  creating.value = true;
+function openCreate() {
   editing.value = null;
   form.value = blank();
-  window.scrollTo({ top: 0 });
+  msg.value = "";
+  modalOpen.value = true;
 }
-function startEdit(p: Product) {
-  creating.value = false;
+function openEdit(p: Product) {
   editing.value = p.slug;
   form.value = {
     originalSlug: p.slug,
@@ -77,11 +78,12 @@ function startEdit(p: Product) {
     order: p.order,
     body: p.body,
   };
-  window.scrollTo({ top: 0 });
+  msg.value = "";
+  modalOpen.value = true;
 }
-function cancel() {
-  creating.value = false;
-  editing.value = null;
+function close() {
+  modalOpen.value = false;
+  armed.value = null;
 }
 
 async function send(url: string, method: string, body?: unknown): Promise<boolean> {
@@ -124,73 +126,11 @@ function del(slug: string) {
 </script>
 
 <template>
-  <n-config-provider :theme="nTheme" :theme-overrides="adminThemeOverrides">
-    <div v-if="creating || editing" class="card">
-      <h2>{{ editing ? "编辑产品" : "新建产品" }}</h2>
-      <div class="admin-form">
-        <div class="row">
-          <div style="flex: 1">
-            <label>名称</label>
-            <n-input v-model:value="form.name" />
-          </div>
-          <div style="width: 220px">
-            <label>slug</label>
-            <n-input v-model:value="form.slug" placeholder="resume-optimizer" />
-          </div>
-          <div style="width: 190px">
-            <label>状态</label>
-            <n-select v-model:value="form.status" :options="statusOptions" />
-          </div>
-        </div>
-        <label>一句话简介</label>
-        <n-input v-model:value="form.tagline" />
-        <div class="row">
-          <div style="width: 190px">
-            <label>封面色</label>
-            <n-input v-model:value="form.cover" placeholder="primary / violet / cyan / green / slate" />
-          </div>
-          <div style="width: 190px">
-            <label>图标（lucide 名）</label>
-            <n-input v-model:value="form.icon" placeholder="file-text" />
-          </div>
-          <div style="width: 150px">
-            <label>排序</label>
-            <n-input-number v-model:value="form.order" style="width: 100%" />
-          </div>
-        </div>
-        <div class="row">
-          <div style="flex: 1">
-            <label>技术栈（每行一个）</label>
-            <n-input v-model:value="form.stack" type="textarea" :rows="3" />
-          </div>
-          <div style="flex: 1">
-            <label>指标（每行一个，如"3.4k 用户"）</label>
-            <n-input v-model:value="form.metrics" type="textarea" :rows="3" />
-          </div>
-        </div>
-        <div class="row">
-          <div style="flex: 1">
-            <label>线上地址（可选）</label>
-            <n-input v-model:value="form.site" placeholder="https://..." />
-          </div>
-          <div style="flex: 1">
-            <label>仓库地址（可选）</label>
-            <n-input v-model:value="form.repo" placeholder="https://github.com/..." />
-          </div>
-        </div>
-        <label>正文（Markdown）</label>
-        <n-input v-model:value="form.body" type="textarea" :rows="8" />
-        <p>
-          <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
-          <button class="btn ghost" type="button" @click="cancel">取消</button>
-        </p>
-      </div>
-    </div>
-
+  <n-config-provider :theme="nTheme" :theme-overrides="adminThemeOverrides(isDark)">
     <div class="card">
       <h2>产品列表（{{ props.products.length }} 个）</h2>
-      <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建产品</button>
-      <table style="margin-top: 10px">
+      <button class="btn" type="button" @click="openCreate">新建产品</button>
+      <table style="margin-top: 12px">
         <thead>
           <tr>
             <th>名称</th>
@@ -209,7 +149,7 @@ function del(slug: string) {
             </td>
             <td>{{ p.order }}</td>
             <td>
-              <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
+              <button class="btn small ghost" type="button" @click="openEdit(p)">编辑</button>
               <button
                 class="btn small danger"
                 :class="{ armed: armed === p.slug }"
@@ -222,6 +162,73 @@ function del(slug: string) {
       </table>
     </div>
 
-    <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+    <n-modal
+      v-model:show="modalOpen"
+      preset="card"
+      :title="modalTitle"
+      style="width: 800px; max-width: calc(100vw - 48px)"
+      :bordered="false"
+      @after-leave="close"
+    >
+      <div class="row">
+        <div style="flex: 1">
+          <label>名称</label>
+          <n-input v-model:value="form.name" />
+        </div>
+        <div style="width: 220px">
+          <label>slug</label>
+          <n-input v-model:value="form.slug" placeholder="resume-optimizer" />
+        </div>
+        <div style="width: 190px">
+          <label>状态</label>
+          <n-select v-model:value="form.status" :options="statusOptions" />
+        </div>
+      </div>
+      <label>一句话简介</label>
+      <n-input v-model:value="form.tagline" />
+      <div class="row">
+        <div style="width: 190px">
+          <label>封面色</label>
+          <n-input v-model:value="form.cover" placeholder="primary / violet / cyan / green / slate" />
+        </div>
+        <div style="width: 190px">
+          <label>图标（lucide 名）</label>
+          <n-input v-model:value="form.icon" placeholder="file-text" />
+        </div>
+        <div style="width: 160px">
+          <label>排序</label>
+          <n-input-number v-model:value="form.order" style="width: 100%" />
+        </div>
+      </div>
+      <div class="row">
+        <div style="flex: 1">
+          <label>技术栈（每行一个）</label>
+          <n-input v-model:value="form.stack" type="textarea" :rows="3" />
+        </div>
+        <div style="flex: 1">
+          <label>指标（每行一个，如"3.4k 用户"）</label>
+          <n-input v-model:value="form.metrics" type="textarea" :rows="3" />
+        </div>
+      </div>
+      <div class="row">
+        <div style="flex: 1">
+          <label>线上地址（可选）</label>
+          <n-input v-model:value="form.site" placeholder="https://..." />
+        </div>
+        <div style="flex: 1">
+          <label>仓库地址（可选）</label>
+          <n-input v-model:value="form.repo" placeholder="https://github.com/..." />
+        </div>
+      </div>
+      <label>正文（Markdown）</label>
+      <n-input v-model:value="form.body" type="textarea" :rows="7" />
+      <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+      <template #footer>
+        <div class="row" style="justify-content: flex-end">
+          <button class="btn ghost" type="button" @click="close">取消</button>
+          <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
+        </div>
+      </template>
+    </n-modal>
   </n-config-provider>
 </template>
