@@ -7,7 +7,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "checkin": "node scripts/checkin.mjs",
+    "new:week": "node scripts/new-week.mjs",
+    "new:post": "node scripts/new-post.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",

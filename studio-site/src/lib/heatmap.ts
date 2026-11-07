@@ -71,3 +71,52 @@ export function buildHeatmap(weeks = 18, end: Date = new Date()): HeatDay[] {
   }
   return days;
 }
+
+/** 全部打卡记录（真实数据，构建期读取） */
+export const ALL_CHECKINS: CheckinEntry[] = (
+  checkinsData as { checkins: CheckinEntry[] }
+).checkins;
+
+function toDayNum(dateStr: string): number {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return Math.floor(Date.UTC(y, (m ?? 1) - 1, d ?? 1) / 86400000);
+}
+
+/** 截止最近一次打卡的连续学习天数（自然日连续，断一天即重新计） */
+export function computeStreakDays(checkins: CheckinEntry[]): number {
+  const days = [...new Set(checkins.map((c) => c.date))].sort().reverse();
+  if (days.length === 0) return 0;
+  let streak = 1;
+  for (let i = 1; i < days.length; i++) {
+    if (toDayNum(days[i - 1]) - toDayNum(days[i]) === 1) streak += 1;
+    else break;
+  }
+  return streak;
+}
+
+/** 本周（周一至周日）打卡天数 */
+export function computeWeekCount(
+  checkins: CheckinEntry[],
+  today: Date = new Date(),
+): number {
+  const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const offsetToMonday = (end.getDay() + 6) % 7;
+  const monday = Math.floor(
+    Date.UTC(end.getFullYear(), end.getMonth(), end.getDate() - offsetToMonday) /
+      86400000,
+  );
+  return checkins.filter((c) => {
+    const n = toDayNum(c.date);
+    return n >= monday && n <= monday + 6;
+  }).length;
+}
+
+/** 首页学习动态所需的全部真实数字（构建期计算，无任何占位值） */
+export function getLearningStats(today: Date = new Date()) {
+  const sorted = [...ALL_CHECKINS].sort((a, b) => b.date.localeCompare(a.date));
+  return {
+    streakDays: computeStreakDays(ALL_CHECKINS),
+    weekCount: computeWeekCount(ALL_CHECKINS, today),
+    latestTopics: sorted[0]?.topics.slice(0, 3) ?? [],
+  };
+}

@@ -6,11 +6,17 @@
  * - 移出 → 翻回正面并逐字重打；
  * - prefers-reduced-motion / 无 JS：直接展示完整内容。
  */
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 type Face = "front" | "back";
 
-const SNIPPETS: Record<Face, { file: string; code: string }> = {
+/** streak / week 由首页传入（构建期从真实打卡与周记数据计算） */
+const props = withDefaults(
+  defineProps<{ streak?: number; week?: number }>(),
+  { streak: 0, week: 0 },
+);
+
+const SNIPPETS = computed<Record<Face, { file: string; code: string }>>(() => ({
   front: {
     file: "studio.config.ts",
     code: `// 把每一次学习，都沉淀为可见的产出
@@ -26,13 +32,13 @@ const studio = {
     code: `// 学以致用，用输出倒逼输入
 const learning = {
   tracks: ["Agent / RAG", "Rust", "雅思 7.0"],
-  streak: 234,
-  weekly: "第 43 周周记已发布",
+  streak: ${props.streak},
+  weekly: "第 ${props.week} 周周记已发布",
 };
 
 learning.ship(); // 🚀`,
   },
-};
+}));
 
 const flipped = ref(false);
 const typingFace = ref<Face | null>(null);
@@ -55,7 +61,7 @@ const prefersReduced = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 async function typeInto(face: Face, gen: number) {
-  const code = SNIPPETS[face].code;
+  const code = SNIPPETS.value[face].code;
   typingFace.value = face;
   typed.value[face] = "";
   for (let i = 1; i <= code.length; i++) {
@@ -92,8 +98,8 @@ async function onLeave() {
 onMounted(() => {
   // 每次加载：正面自动打字；reduced-motion 直接展示完整内容
   if (prefersReduced()) {
-    typed.value.front = SNIPPETS.front.code;
-    typed.value.back = SNIPPETS.back.code;
+    typed.value.front = SNIPPETS.value.front.code;
+    typed.value.back = SNIPPETS.value.back.code;
     return;
   }
   const gen = ++runId;

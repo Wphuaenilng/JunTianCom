@@ -13,13 +13,16 @@ import HeroShape from "../components/vue/HeroShape.vue";
 import EditorCard from "../components/vue/EditorCard.vue";
 import AnimatedContent from "../components/vue/bits/AnimatedContent.vue";
 import { SITE } from "../data/site";
-import { buildHeatmap } from "../lib/heatmap";
+import { buildHeatmap, getLearningStats } from "../lib/heatmap";
 
 const products = (await getCollection("products")).sort(
   (a, b) => a.data.order - b.data.order,
 );
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const notes = (await getCollection("learning")).sort(
+  (a, b) => b.data.week - a.data.week,
 );
 
 const featuredProducts = products
@@ -31,11 +34,14 @@ const latestPosts = [...posts]
 
 const heatDays = buildHeatmap(26);
 
+// 首页全部学习数字来自真实打卡数据（构建期计算）
+const { streakDays, weekCount, latestTopics } = getLearningStats();
+const latestWeek = notes[0]?.data.week ?? 0;
+
 const heroStats = [
   { value: products.length, label: "上线 / 在建产品" },
   { value: posts.length, label: "篇文章" },
-  { value: 1.2, decimals: 1, suffix: "k", label: "GitHub Stars" },
-  { value: SITE.stats.streakDays, label: "天连续学习" },
+  { value: streakDays, label: "天连续学习" },
 ];
 
 const jsonld = {
@@ -56,7 +62,7 @@ const jsonld = {
       <div>
         <span class="hero-badge reveal">
           <Icon name="lucide:sparkles" />
-          独立开发 · 持续学习 · <b>已连续记录 {SITE.stats.streakDays} 天</b>
+          独立开发 · 持续学习 · <b>已连续记录 {streakDays} 天</b>
         </span>
         <HeroTitle client:load />
         <p class="lead reveal" style="--reveal-delay:120ms">
@@ -71,8 +77,8 @@ const jsonld = {
         <HeroStats client:load stats={heroStats} />
       </div>
       <div class="editor-wrap reveal" style="--reveal-delay:150ms">
-        <EditorCard client:load />
-        <div class="float-chip c1"><Icon name="lucide:zap" />本周 commit ×12</div>
+        <EditorCard client:load streak={streakDays} week={latestWeek} />
+        <div class="float-chip c1"><Icon name="lucide:zap" />本周打卡 ×{weekCount}</div>
         <div class="float-chip c2"><Icon name="lucide:boxes" />{products.length} 个产品在线</div>
         <div class="float-chip c3"><Icon name="lucide:flask-conical" />RAG 调优中…</div>
       </div>
@@ -117,14 +123,14 @@ const jsonld = {
       <div class="learn-strip">
       <div class="learn-top">
         <h3><Icon name="lucide:flame" />近半年学习热力图</h3>
-        <span class="streak"><Icon name="lucide:flame" />{SITE.learning.streak}</span>
+        <span class="streak"><Icon name="lucide:flame" />连续 {streakDays} 天 · 本周 {weekCount} 次记录</span>
       </div>
       <Heatmap days={heatDays} />
       <div class="heat-foot">
         <span>少</span>
         <div class="legend"><i></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i></div>
         <span>多</span>
-        <span style="margin-left:auto">本周在学习：<b style="color:var(--text)">{SITE.learning.weekTopics}</b></span>
+        <span style="margin-left:auto">最近在学：<b style="color:var(--text)">{latestTopics.length ? latestTopics.join("、") : "还没有打卡记录"}</b></span>
       </div>
       </div>
     </AnimatedContent>

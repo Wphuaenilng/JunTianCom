@@ -7,12 +7,13 @@ import RoadmapCard from "../components/RoadmapCard.astro";
 import WeekNote from "../components/WeekNote.astro";
 import { ROADMAP, READING } from "../data/roadmap";
 import { SITE } from "../data/site";
-import { buildHeatmap } from "../lib/heatmap";
+import { buildHeatmap, getLearningStats } from "../lib/heatmap";
 
 const notes = (await getCollection("learning")).sort(
   (a, b) => b.data.week - a.data.week,
 );
 const heatDays = buildHeatmap(18);
+const { streakDays } = getLearningStats();
 ---
 
 <Base
@@ -41,7 +42,7 @@ const heatDays = buildHeatmap(18);
           <h4><Icon name="lucide:flame" />打卡数据</h4>
           <Heatmap days={heatDays} compact />
           <div class="row" style="padding:10px 0 0;border-bottom:none">
-            <span>连续打卡</span><b>{SITE.stats.streakDays} 天</b>
+            <span>连续打卡</span><b>{streakDays} 天</b>
           </div>
           <div class="row" style="padding:8px 0 0;border-bottom:none">
             <span>本年累计</span><b>1,842 次</b>

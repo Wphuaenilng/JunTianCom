@@ -15,16 +15,6 @@ export const SITE = {
   location: "中国 · 远程协作",
   email: "hi@starisle.dev",
   github: "https://github.com/starisle",
-  /** 示例统计（占位文案，与设计稿一致） */
-  stats: {
-    streakDays: 234,
-    githubStars: "1.2k",
-  },
-  /** 首页学习动态条 */
-  learning: {
-    streak: "连续 234 天 · 本周 18 次记录",
-    weekTopics: "Rust 所有权 · Agent 编排 · 雅思口语 Part2",
-  },
 } as const;
 
 export const NAV = [

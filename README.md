@@ -13,18 +13,33 @@ cd studio-site
 npm install
 npm run dev      # http://localhost:4321
 npm run build    # 产物在 studio-site/dist
+
+# 日常记录（详见下文「学习打卡」）
+npm run checkin -- "Rust 所有权" "Agent 编排"   # 本地打卡,断网可用
+npm run new:week                                # 生成本周周记模板
+npm run new:post -- "文章标题" [slug]           # 生成博客草稿(draft:true)
 ```
 
 ## 学习打卡（热力图数据来源）
 
-在 GitHub 上新建 Issue 即完成打卡，机器人自动记录，无需碰代码：
+两种打卡方式，数据都汇入 `studio-site/src/data/checkins.json`：
 
-1. 进入本仓库 **Issues → New issue → 选「打卡」模板**
-2. 填「今天学了什么」（一行一个主题）；日期不填默认为今天（北京时间）
-3. 提交后，Action 自动把记录写入 `studio-site/src/data/checkins.json` 并关闭 issue
+**方式一：本地命令（推荐，不依赖网络）**
+
+```bash
+npm run checkin -- "今天学的A" "今天学的B"
+```
+
+自动合并写入数据文件并 git commit 到本地；推送失败不影响记录，网络可用后 `git push` 一次同步。
+
+**方式二：GitHub Issue（手机/异地）**
+
+1. 进入本仓库 **Issues → New issue → 选「打卡」模板**（模板选择页若未出现，直接用标题「打卡」+ 正文每行一个主题也可）
+2. 日期不填默认为今天（北京时间）
+3. Action 自动写入数据并关闭 issue
 
 说明：
 
-- 热力图在构建期读取该数据文件，页面保持零 JS 纯静态
-- 同一天多次打卡会自动合并主题；写错了直接编辑 `checkins.json` 纠正（日期格式 `YYYY-MM-DD`）
+- 首页的「连续学习 X 天」「本周打卡 ×N」等数字全部由数据文件构建期自动计算，无手工维护
+- 同一天多次打卡自动合并主题；写错了直接编辑 `checkins.json`（日期格式 `YYYY-MM-DD`）
 - 深浅规则：1 个主题 = 1 级，2 个 = 2 级，3~4 个 = 3 级，5 个及以上 = 4 级
