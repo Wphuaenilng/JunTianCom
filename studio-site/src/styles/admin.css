@@ -25,6 +25,40 @@ body.admin {
   color-scheme: dark;
 }
 
+/* ---------- 浅色主题(与官网共用 starisle-theme 键) ---------- */
+html[data-theme="light"] body.admin {
+  --adm-bg: #f5f7fb;
+  --adm-panel: #ffffff;
+  --adm-card: rgba(255, 255, 255, 0.88);
+  --adm-border: rgba(15, 23, 42, 0.1);
+  --adm-border-strong: rgba(15, 23, 42, 0.22);
+  --adm-text: #0f1729;
+  --adm-muted: #5b6478;
+  --adm-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+  background:
+    radial-gradient(900px 520px at 88% -12%, color-mix(in srgb, var(--primary) 7%, transparent), transparent 62%),
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    var(--adm-bg);
+  background-size: auto, 44px 44px, 44px 44px, auto;
+  color-scheme: light;
+}
+
+/* ---------- 表单布局系统:控件不无限拉伸 ---------- */
+.admin-form { max-width: 860px; }
+.admin-form-narrow { max-width: 620px; }
+.field-row { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.field-row > div { min-width: 0; }
+.field-row .flex-1 { flex: 1; min-width: 280px; }
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0 16px;
+  max-width: 980px;
+}
+.settings-grid .full { grid-column: 1 / -1; }
+.admin-textarea-body { min-height: 220px; }
+
 /* ---------- 侧边栏 ---------- */
 .admin-sidebar {
   position: fixed;
@@ -362,7 +396,70 @@ body.admin ::-webkit-scrollbar-track { background: transparent; }
   .admin-nav-label { display: none; }
   .admin-nav a.active::before { display: none; }
   .admin-back { margin: 0 0 0 auto; }
+  .admin-theme-btn { margin: 0 0 0 8px; }
   body.admin main { margin-left: 0; padding: 20px 18px 56px; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .admin-pagehead { flex-direction: column; align-items: flex-start; }
 }
+
+/* ---------- 浅色主题组件覆盖 ---------- */
+html[data-theme="light"] body.admin .admin-sidebar {
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+}
+html[data-theme="light"] body.admin .admin-brand b,
+html[data-theme="light"] body.admin .admin-pagehead h1,
+html[data-theme="light"] body.admin .card h2 { color: #0f1729; }
+html[data-theme="light"] body.admin .admin-nav a:hover { background: rgba(15, 23, 42, 0.05); }
+html[data-theme="light"] body.admin .admin-nav a.active { color: #fff; }
+html[data-theme="light"] body.admin .admin-back:hover { background: rgba(15, 23, 42, 0.05); color: #0f1729; }
+html[data-theme="light"] body.admin input,
+html[data-theme="light"] body.admin select,
+html[data-theme="light"] body.admin textarea {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.16);
+}
+html[data-theme="light"] body.admin input:focus,
+html[data-theme="light"] body.admin select:focus,
+html[data-theme="light"] body.admin textarea:focus { background: #ffffff; }
+html[data-theme="light"] body.admin input::placeholder,
+html[data-theme="light"] body.admin textarea::placeholder { color: #94a3b8; }
+html[data-theme="light"] body.admin .card {
+  background: var(--adm-card);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+html[data-theme="light"] body.admin .stat { background: #ffffff; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
+html[data-theme="light"] body.admin .tag {
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+html[data-theme="light"] body.admin .badge.green { background: rgba(5, 150, 105, 0.1); color: #047857; }
+html[data-theme="light"] body.admin .badge.gray { background: rgba(15, 23, 42, 0.07); color: #475569; }
+html[data-theme="light"] body.admin .badge.amber { background: rgba(217, 119, 6, 0.12); color: #b45309; }
+html[data-theme="light"] body.admin .msg.ok { color: #047857; }
+html[data-theme="light"] body.admin .msg.err { color: #b91c1c; }
+html[data-theme="light"] body.admin .btn.ghost { background: rgba(15, 23, 42, 0.04); }
+html[data-theme="light"] body.admin .btn.ghost:hover { background: rgba(15, 23, 42, 0.09); }
+html[data-theme="light"] body.admin .btn.danger { background: rgba(220, 38, 38, 0.07); color: #b91c1c; border-color: rgba(220, 38, 38, 0.25); }
+html[data-theme="light"] body.admin .btn.danger:hover { background: rgba(220, 38, 38, 0.15); }
+html[data-theme="light"] body.admin .btn.danger.armed { background: #dc2626; border-color: #dc2626; color: #fff; }
+html[data-theme="light"] body.admin .admin-toast { background: #ffffff; }
+html[data-theme="light"] body.admin tbody tr:hover { background: rgba(15, 23, 42, 0.035); }
+html[data-theme="light"] body.admin ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.2); border-color: var(--adm-bg); }
+
+/* ---------- 主题切换按钮 ---------- */
+.admin-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--adm-border);
+  background: rgba(148, 163, 184, 0.07);
+  color: var(--adm-muted);
+  cursor: pointer;
+  transition: color 0.16s, border-color 0.16s, background 0.16s;
+  flex-shrink: 0;
+}
+.admin-theme-btn:hover { color: var(--adm-text); border-color: var(--adm-border-strong); background: rgba(148, 163, 184, 0.14); }

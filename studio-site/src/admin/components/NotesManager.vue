@@ -92,6 +92,7 @@ function del(week: number) {
 <template>
   <div v-if="creating || editing" class="card">
     <h2>{{ editing ? `编辑第 ${editing} 周` : "新建周记" }}</h2>
+    <div class="admin-form">
     <div class="row">
       <div style="width: 110px">
         <label>周次</label>
@@ -112,6 +113,7 @@ function del(week: number) {
       <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
       <button class="btn ghost" type="button" @click="cancel">取消</button>
     </p>
+    </div>
   </div>
 
   <div class="card">

@@ -83,10 +83,16 @@ function del(date: string) {
 <template>
   <div class="card">
     <h2>新增 / 合并打卡</h2>
-    <label>日期</label>
-    <input v-model="addDate" type="date" />
-    <label>主题（每行一个）</label>
-    <textarea v-model="addTopics" rows="3" placeholder="Rust 所有权&#10;Agent 编排"></textarea>
+    <div class="field-row">
+      <div style="width: 190px; flex-shrink: 0">
+        <label>日期</label>
+        <input v-model="addDate" type="date" />
+      </div>
+      <div class="flex-1">
+        <label>主题（每行一个）</label>
+        <textarea v-model="addTopics" rows="3" placeholder="Rust 所有权&#10;Agent 编排"></textarea>
+      </div>
+    </div>
     <p>
       <button class="btn" type="button" :disabled="saving" @click="add">{{ saving ? "保存中…" : "保存" }}</button>
       <span class="muted" style="margin-left: 10px">同日期会自动合并主题</span>

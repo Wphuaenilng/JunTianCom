@@ -116,6 +116,7 @@ function del(slug: string) {
 <template>
   <div v-if="creating || editing" class="card">
     <h2>{{ editing ? "编辑产品" : "新建产品" }}</h2>
+    <div class="admin-form">
     <div class="row">
       <div style="flex: 1">
         <label>名称</label>
@@ -176,6 +177,7 @@ function del(slug: string) {
       <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
       <button class="btn ghost" type="button" @click="cancel">取消</button>
     </p>
+    </div>
   </div>
 
   <div class="card">

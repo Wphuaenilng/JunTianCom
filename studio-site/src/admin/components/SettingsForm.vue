@@ -65,15 +65,19 @@ async function save() {
 <template>
   <div class="card">
     <h2>基本信息（头部 / 关于页 / SEO 默认值）</h2>
-    <div v-for="[key, label] in ID_FIELDS" :key="key">
-      <label>{{ label }}（{{ key }}）</label>
-      <input v-model="identity[key]" />
+    <div class="settings-grid">
+      <div v-for="[key, label] in ID_FIELDS" :key="key" :class="{ full: ['url', 'title', 'description', 'role'].includes(key) }">
+        <label>{{ label }}（{{ key }}）</label>
+        <input v-model="identity[key]" />
+      </div>
     </div>
   </div>
 
   <div class="card">
     <h2>技能栈（关于页，每行一个）</h2>
-    <textarea v-model="skills" rows="6"></textarea>
+    <div class="admin-form-narrow">
+      <textarea v-model="skills" rows="6"></textarea>
+    </div>
   </div>
 
   <div class="card">

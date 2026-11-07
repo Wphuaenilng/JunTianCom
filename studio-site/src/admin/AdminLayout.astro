@@ -46,6 +46,13 @@ const isActive = (href: string) =>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
     <title>{title} · 站点后台</title>
+    <script is:inline>
+      // 与官网共用主题键,首帧前设定避免闪烁
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("starisle-theme") ?? "dark";
+      } catch {}
+    </script>
   </head>
   <body class="admin">
     <aside class="admin-sidebar">
@@ -71,10 +78,16 @@ const isActive = (href: string) =>
           ))
         }
       </nav>
-      <a class="admin-back" href="/" target="_blank">
-        <Icon name="lucide:external-link" size={13} />
-        打开官网
-      </a>
+      <div class="admin-foot">
+        <button class="admin-theme-btn" id="admin-theme-toggle" type="button" title="切换明暗主题" aria-label="切换明暗主题">
+          <span class="ic-moon"><Icon name="lucide:moon" size={15} /></span>
+          <span class="ic-sun"><Icon name="lucide:sun" size={15} /></span>
+        </button>
+        <a class="admin-back" href="/" target="_blank">
+          <Icon name="lucide:external-link" size={13} />
+          打开官网
+        </a>
+      </div>
     </aside>
 
     <main>
@@ -92,6 +105,15 @@ const isActive = (href: string) =>
   </body>
 </html>
 
+<style>
+  .admin-foot { margin-top: auto; display: flex; align-items: center; gap: 8px; }
+  .admin-foot .admin-back { margin: 0; flex: 1; }
+  /* 图标随主题切换:暗色显示月亮(可切亮),亮色显示太阳(可切暗) */
+  .ic-sun { display: none; }
+  :global(html[data-theme="light"]) .ic-sun { display: inline-flex; }
+  :global(html[data-theme="light"]) .ic-moon { display: none; }
+</style>
+
 <script>
   // 轻量 toast：window.adminToast(message, "ok" | "err")
   function adminToast(message: string, type: "ok" | "err" = "ok") {
@@ -107,4 +129,16 @@ const isActive = (href: string) =>
     }, 2800);
   }
   (window as unknown as Record<string, unknown>).adminToast = adminToast;
+
+  // 明暗主题切换(与官网共用 localStorage 键 starisle-theme)
+  document
+    .getElementById("admin-theme-toggle")
+    ?.addEventListener("click", () => {
+      const html = document.documentElement;
+      const next = html.dataset.theme === "light" ? "dark" : "light";
+      html.dataset.theme = next;
+      try {
+        localStorage.setItem("starisle-theme", next);
+      } catch {}
+    });
 </script>
