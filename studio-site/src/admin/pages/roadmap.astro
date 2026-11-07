@@ -5,5 +5,5 @@ import { READING, ROADMAP } from "../../data/roadmap";
 ---
 
 <AdminLayout title="路线进度" active="/admin/roadmap" desc="年度学习路线 · 里程碑 · 在读书单">
-  <RoadmapManager client:load roadmap={ROADMAP} reading={READING} />
+  <RoadmapManager client:only="vue" roadmap={ROADMAP} reading={READING} />
 </AdminLayout>

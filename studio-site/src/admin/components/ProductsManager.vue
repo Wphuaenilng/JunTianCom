@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { NConfigProvider, NInput, NInputNumber, NSelect } from "naive-ui";
+import { adminThemeOverrides, useAdminTheme } from "../lib/naive";
+
+const { nTheme } = useAdminTheme();
 
 interface Product {
   slug: string;
@@ -16,6 +20,12 @@ interface Product {
   body: string;
 }
 const props = defineProps<{ products: Product[] }>();
+
+const statusOptions = [
+  { label: "online（在线）", value: "online" },
+  { label: "building（开发中）", value: "building" },
+  { label: "beta（内测）", value: "beta" },
+];
 
 const creating = ref(false);
 const editing = ref<string | null>(null);
@@ -114,106 +124,104 @@ function del(slug: string) {
 </script>
 
 <template>
-  <div v-if="creating || editing" class="card">
-    <h2>{{ editing ? "编辑产品" : "新建产品" }}</h2>
-    <div class="admin-form">
-    <div class="row">
-      <div style="flex: 1">
-        <label>名称</label>
-        <input v-model="form.name" />
-      </div>
-      <div style="width: 200px">
-        <label>slug</label>
-        <input v-model="form.slug" placeholder="resume-optimizer" />
-      </div>
-      <div style="width: 130px">
-        <label>状态</label>
-        <select v-model="form.status">
-          <option value="online">online（在线）</option>
-          <option value="building">building（开发中）</option>
-          <option value="beta">beta（内测）</option>
-        </select>
+  <n-config-provider :theme="nTheme" :theme-overrides="adminThemeOverrides">
+    <div v-if="creating || editing" class="card">
+      <h2>{{ editing ? "编辑产品" : "新建产品" }}</h2>
+      <div class="admin-form">
+        <div class="row">
+          <div style="flex: 1">
+            <label>名称</label>
+            <n-input v-model:value="form.name" />
+          </div>
+          <div style="width: 220px">
+            <label>slug</label>
+            <n-input v-model:value="form.slug" placeholder="resume-optimizer" />
+          </div>
+          <div style="width: 190px">
+            <label>状态</label>
+            <n-select v-model:value="form.status" :options="statusOptions" />
+          </div>
+        </div>
+        <label>一句话简介</label>
+        <n-input v-model:value="form.tagline" />
+        <div class="row">
+          <div style="width: 190px">
+            <label>封面色</label>
+            <n-input v-model:value="form.cover" placeholder="primary / violet / cyan / green / slate" />
+          </div>
+          <div style="width: 190px">
+            <label>图标（lucide 名）</label>
+            <n-input v-model:value="form.icon" placeholder="file-text" />
+          </div>
+          <div style="width: 150px">
+            <label>排序</label>
+            <n-input-number v-model:value="form.order" style="width: 100%" />
+          </div>
+        </div>
+        <div class="row">
+          <div style="flex: 1">
+            <label>技术栈（每行一个）</label>
+            <n-input v-model:value="form.stack" type="textarea" :rows="3" />
+          </div>
+          <div style="flex: 1">
+            <label>指标（每行一个，如"3.4k 用户"）</label>
+            <n-input v-model:value="form.metrics" type="textarea" :rows="3" />
+          </div>
+        </div>
+        <div class="row">
+          <div style="flex: 1">
+            <label>线上地址（可选）</label>
+            <n-input v-model:value="form.site" placeholder="https://..." />
+          </div>
+          <div style="flex: 1">
+            <label>仓库地址（可选）</label>
+            <n-input v-model:value="form.repo" placeholder="https://github.com/..." />
+          </div>
+        </div>
+        <label>正文（Markdown）</label>
+        <n-input v-model:value="form.body" type="textarea" :rows="8" />
+        <p>
+          <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
+          <button class="btn ghost" type="button" @click="cancel">取消</button>
+        </p>
       </div>
     </div>
-    <label>一句话简介</label>
-    <input v-model="form.tagline" />
-    <div class="row">
-      <div style="width: 160px">
-        <label>封面色</label>
-        <input v-model="form.cover" placeholder="primary / violet / cyan / green / slate" />
-      </div>
-      <div style="width: 160px">
-        <label>图标（lucide 名）</label>
-        <input v-model="form.icon" placeholder="file-text" />
-      </div>
-      <div style="width: 120px">
-        <label>排序</label>
-        <input v-model.number="form.order" type="number" />
-      </div>
-    </div>
-    <div class="row">
-      <div style="flex: 1">
-        <label>技术栈（每行一个）</label>
-        <textarea v-model="form.stack" rows="3"></textarea>
-      </div>
-      <div style="flex: 1">
-        <label>指标（每行一个，如"3.4k 用户"）</label>
-        <textarea v-model="form.metrics" rows="3"></textarea>
-      </div>
-    </div>
-    <div class="row">
-      <div style="flex: 1">
-        <label>线上地址（可选）</label>
-        <input v-model="form.site" placeholder="https://..." />
-      </div>
-      <div style="flex: 1">
-        <label>仓库地址（可选）</label>
-        <input v-model="form.repo" placeholder="https://github.com/..." />
-      </div>
-    </div>
-    <label>正文（Markdown）</label>
-    <textarea v-model="form.body" rows="8"></textarea>
-    <p>
-      <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
-      <button class="btn ghost" type="button" @click="cancel">取消</button>
-    </p>
-    </div>
-  </div>
 
-  <div class="card">
-    <h2>产品列表（{{ props.products.length }} 个）</h2>
-    <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建产品</button>
-    <table style="margin-top: 10px">
-      <thead>
-        <tr>
-          <th>名称</th>
-          <th style="width: 100px">状态</th>
-          <th style="width: 70px">排序</th>
-          <th style="width: 150px">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="p in props.products" :key="p.slug">
-          <td>{{ p.name }}<br /><span class="muted">{{ p.slug }}</span></td>
-          <td>
-            <span class="badge" :class="p.status === 'online' ? 'green' : p.status === 'beta' ? 'amber' : 'gray'">
-              {{ p.status }}
-            </span>
-          </td>
-          <td>{{ p.order }}</td>
-          <td>
-            <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
-            <button
-              class="btn small danger"
-              :class="{ armed: armed === p.slug }"
-              type="button"
-              @click="del(p.slug)"
-            >{{ armed === p.slug ? "确认删除" : "删除" }}</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="card">
+      <h2>产品列表（{{ props.products.length }} 个）</h2>
+      <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建产品</button>
+      <table style="margin-top: 10px">
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th style="width: 100px">状态</th>
+            <th style="width: 70px">排序</th>
+            <th style="width: 150px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="p in props.products" :key="p.slug">
+            <td>{{ p.name }}<br /><span class="muted">{{ p.slug }}</span></td>
+            <td>
+              <span class="badge" :class="p.status === 'online' ? 'green' : p.status === 'beta' ? 'amber' : 'gray'">
+                {{ p.status }}
+              </span>
+            </td>
+            <td>{{ p.order }}</td>
+            <td>
+              <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
+              <button
+                class="btn small danger"
+                :class="{ armed: armed === p.slug }"
+                type="button"
+                @click="del(p.slug)"
+              >{{ armed === p.slug ? "确认删除" : "删除" }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+    <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+  </n-config-provider>
 </template>

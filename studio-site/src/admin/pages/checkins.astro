@@ -10,5 +10,5 @@ const entries = [...data.checkins].sort((a, b) => b.date.localeCompare(a.date));
 ---
 
 <AdminLayout title="打卡记录" active="/admin/checkins" desc="日常学习记录 · 同日自动合并主题 · 数据驱动首页热力图">
-  <CheckinsManager client:load entries={entries} />
+  <CheckinsManager client:only="vue" entries={entries} />
 </AdminLayout>

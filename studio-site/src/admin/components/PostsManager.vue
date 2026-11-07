@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { NCheckbox, NConfigProvider, NInput } from "naive-ui";
+import { adminThemeOverrides, useAdminTheme } from "../lib/naive";
+
+const { nTheme } = useAdminTheme();
 
 interface Post {
   slug: string;
@@ -114,81 +118,83 @@ function del(slug: string) {
 </script>
 
 <template>
-  <div v-if="creating || editing" class="card">
-    <h2>{{ editing ? "编辑文章" : "新建文章草稿" }}</h2>
-    <div class="admin-form">
-    <div class="row">
-      <div style="flex: 2">
-        <label>标题</label>
-        <input v-model="form.title" />
-      </div>
-      <div style="flex: 1">
-        <label>slug（留空自动生成）</label>
-        <input v-model="form.slug" placeholder="rag-accuracy-notes" />
+  <n-config-provider :theme="nTheme" :theme-overrides="adminThemeOverrides">
+    <div v-if="creating || editing" class="card">
+      <h2>{{ editing ? "编辑文章" : "新建文章草稿" }}</h2>
+      <div class="admin-form">
+        <div class="row">
+          <div style="flex: 2">
+            <label>标题</label>
+            <n-input v-model:value="form.title" />
+          </div>
+          <div style="flex: 1">
+            <label>slug（留空自动生成）</label>
+            <n-input v-model:value="form.slug" placeholder="rag-accuracy-notes" />
+          </div>
+        </div>
+        <label>描述</label>
+        <n-input v-model:value="form.description" placeholder="一句话描述这篇文章解决什么问题" />
+        <div class="row">
+          <div style="width: 170px">
+            <label>发布日期</label>
+            <input v-model="form.pubDate" type="date" />
+          </div>
+          <div style="width: 170px">
+            <label>分类</label>
+            <n-input v-model:value="form.category" />
+          </div>
+          <div style="display: flex; align-items: center; gap: 18px; padding-bottom: 8px">
+            <n-checkbox v-model:checked="form.draft">草稿（不显示在站点）</n-checkbox>
+            <n-checkbox v-model:checked="form.pinned">置顶</n-checkbox>
+          </div>
+        </div>
+        <label>标签（每行一个）</label>
+        <n-input v-model:value="form.tags" type="textarea" :rows="2" />
+        <label>正文（Markdown）</label>
+        <n-input v-model:value="form.body" type="textarea" :rows="18" />
+        <p>
+          <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
+          <button class="btn ghost" type="button" @click="cancel">取消</button>
+        </p>
       </div>
     </div>
-    <label>描述</label>
-    <input v-model="form.description" placeholder="一句话描述这篇文章解决什么问题" />
-    <div class="row">
-      <div style="width: 160px">
-        <label>发布日期</label>
-        <input v-model="form.pubDate" type="date" />
-      </div>
-      <div style="width: 160px">
-        <label>分类</label>
-        <input v-model="form.category" />
-      </div>
-      <div style="display: flex; align-items: flex-end; gap: 16px; padding-bottom: 8px">
-        <label style="margin: 0"><input v-model="form.draft" type="checkbox" style="width: auto" /> 草稿（不显示在站点）</label>
-        <label style="margin: 0"><input v-model="form.pinned" type="checkbox" style="width: auto" /> 置顶</label>
-      </div>
-    </div>
-    <label>标签（每行一个）</label>
-    <textarea v-model="form.tags" rows="2"></textarea>
-    <label>正文（Markdown）</label>
-    <textarea v-model="form.body" rows="18"></textarea>
-    <p>
-      <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
-      <button class="btn ghost" type="button" @click="cancel">取消</button>
-    </p>
-    </div>
-  </div>
 
-  <div class="card">
-    <h2>文章列表（{{ props.posts.length }} 篇）</h2>
-    <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建文章</button>
-    <table style="margin-top: 10px">
-      <thead>
-        <tr>
-          <th>标题</th>
-          <th style="width: 110px">日期</th>
-          <th style="width: 90px">分类</th>
-          <th style="width: 130px">状态</th>
-          <th style="width: 150px">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="p in props.posts" :key="p.slug">
-          <td>{{ p.title }}<br /><span class="muted">{{ p.slug }}</span></td>
-          <td>{{ p.pubDate }}</td>
-          <td>{{ p.category }}</td>
-          <td>
-            <span class="badge" :class="p.draft ? 'gray' : 'green'">{{ p.draft ? "草稿" : "已发布" }}</span>
-            <span v-if="p.pinned" class="badge amber" style="margin-left: 4px">置顶</span>
-          </td>
-          <td>
-            <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
-            <button
-              class="btn small danger"
-              :class="{ armed: armed === p.slug }"
-              type="button"
-              @click="del(p.slug)"
-            >{{ armed === p.slug ? "确认删除" : "删除" }}</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="card">
+      <h2>文章列表（{{ props.posts.length }} 篇）</h2>
+      <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建文章</button>
+      <table style="margin-top: 10px">
+        <thead>
+          <tr>
+            <th>标题</th>
+            <th style="width: 110px">日期</th>
+            <th style="width: 90px">分类</th>
+            <th style="width: 130px">状态</th>
+            <th style="width: 150px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="p in props.posts" :key="p.slug">
+            <td>{{ p.title }}<br /><span class="muted">{{ p.slug }}</span></td>
+            <td>{{ p.pubDate }}</td>
+            <td>{{ p.category }}</td>
+            <td>
+              <span class="badge" :class="p.draft ? 'gray' : 'green'">{{ p.draft ? "草稿" : "已发布" }}</span>
+              <span v-if="p.pinned" class="badge amber" style="margin-left: 4px">置顶</span>
+            </td>
+            <td>
+              <button class="btn small ghost" type="button" @click="startEdit(p)">编辑</button>
+              <button
+                class="btn small danger"
+                :class="{ armed: armed === p.slug }"
+                type="button"
+                @click="del(p.slug)"
+              >{{ armed === p.slug ? "确认删除" : "删除" }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-  <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+    <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+  </n-config-provider>
 </template>

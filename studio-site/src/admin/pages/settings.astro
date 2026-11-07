@@ -10,7 +10,7 @@ const identity = Object.fromEntries(
 
 <AdminLayout title="站点配置" active="/admin/settings" desc="品牌信息 · 关于页 · 合作方式">
   <SettingsForm
-    client:load
+    client:only="vue"
     identity={identity}
     skills={settingsData.skills}
     timeline={settingsData.timeline}

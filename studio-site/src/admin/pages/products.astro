@@ -28,5 +28,5 @@ const products = listEntries(DIRS.products)
 ---
 
 <AdminLayout title="产品展示" active="/admin/products" desc="产品橱窗条目 · 状态 · 技术栈 · 指标">
-  <ProductsManager client:load products={products} />
+  <ProductsManager client:only="vue" products={products} />
 </AdminLayout>

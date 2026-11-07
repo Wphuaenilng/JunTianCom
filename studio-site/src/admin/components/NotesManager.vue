@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { NConfigProvider, NInput, NInputNumber } from "naive-ui";
+import { adminThemeOverrides, useAdminTheme } from "../lib/naive";
+
+const { nTheme } = useAdminTheme();
 
 interface Note {
   week: number;
@@ -90,63 +94,65 @@ function del(week: number) {
 </script>
 
 <template>
-  <div v-if="creating || editing" class="card">
-    <h2>{{ editing ? `编辑第 ${editing} 周` : "新建周记" }}</h2>
-    <div class="admin-form">
-    <div class="row">
-      <div style="width: 110px">
-        <label>周次</label>
-        <input v-model.number="form.week" type="number" min="1" max="53" />
-      </div>
-      <div style="flex: 1">
-        <label>日期（该周周一）</label>
-        <input v-model="form.date" type="date" />
+  <n-config-provider :theme="nTheme" :theme-overrides="adminThemeOverrides">
+    <div v-if="creating || editing" class="card">
+      <h2>{{ editing ? `编辑第 ${editing} 周` : "新建周记" }}</h2>
+      <div class="admin-form">
+        <div class="row">
+          <div style="width: 140px">
+            <label>周次</label>
+            <n-input-number v-model:value="form.week" :min="1" :max="53" />
+          </div>
+          <div style="flex: 1">
+            <label>日期（该周周一）</label>
+            <input v-model="form.date" type="date" />
+          </div>
+        </div>
+        <label>标题</label>
+        <n-input v-model:value="form.title" placeholder="本周主题一句话" />
+        <label>要点（每行一条，展示在时间线上）</label>
+        <n-input v-model:value="form.highlights" type="textarea" :rows="3" />
+        <label>正文（Markdown）</label>
+        <n-input v-model:value="form.body" type="textarea" :rows="10" placeholder="随手记，十分钟以内" />
+        <p>
+          <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
+          <button class="btn ghost" type="button" @click="cancel">取消</button>
+        </p>
       </div>
     </div>
-    <label>标题</label>
-    <input v-model="form.title" placeholder="本周主题一句话" />
-    <label>要点（每行一条，展示在时间线上）</label>
-    <textarea v-model="form.highlights" rows="3"></textarea>
-    <label>正文（Markdown）</label>
-    <textarea v-model="form.body" rows="10" placeholder="随手记，十分钟以内"></textarea>
-    <p>
-      <button class="btn" type="button" :disabled="saving" @click="save">{{ saving ? "保存中…" : "保存" }}</button>
-      <button class="btn ghost" type="button" @click="cancel">取消</button>
-    </p>
+
+    <div class="card">
+      <h2>周记列表（{{ props.notes.length }} 篇）</h2>
+      <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建周记</button>
+      <table style="margin-top: 10px">
+        <thead>
+          <tr>
+            <th style="width: 70px">周次</th>
+            <th style="width: 110px">日期</th>
+            <th>标题</th>
+            <th style="width: 150px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="n in props.notes" :key="n.week">
+            <td>第 {{ n.week }} 周</td>
+            <td>{{ n.date }}</td>
+            <td>{{ n.title }}</td>
+            <td>
+              <button class="btn small ghost" type="button" @click="startEdit(n)">编辑</button>
+              <button
+                class="btn small danger"
+                :class="{ armed: armed === n.week }"
+                type="button"
+                @click="del(n.week)"
+              >{{ armed === n.week ? "确认删除" : "删除" }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-if="props.notes.length === 0" class="muted">还没有周记</p>
     </div>
-  </div>
 
-  <div class="card">
-    <h2>周记列表（{{ props.notes.length }} 篇）</h2>
-    <button v-if="!creating && !editing" class="btn" type="button" @click="startCreate">新建周记</button>
-    <table style="margin-top: 10px">
-      <thead>
-        <tr>
-          <th style="width: 70px">周次</th>
-          <th style="width: 110px">日期</th>
-          <th>标题</th>
-          <th style="width: 150px">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="n in props.notes" :key="n.week">
-          <td>第 {{ n.week }} 周</td>
-          <td>{{ n.date }}</td>
-          <td>{{ n.title }}</td>
-          <td>
-            <button class="btn small ghost" type="button" @click="startEdit(n)">编辑</button>
-            <button
-              class="btn small danger"
-              :class="{ armed: armed === n.week }"
-              type="button"
-              @click="del(n.week)"
-            >{{ armed === n.week ? "确认删除" : "删除" }}</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p v-if="props.notes.length === 0" class="muted">还没有周记</p>
-  </div>
-
-  <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+    <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+  </n-config-provider>
 </template>

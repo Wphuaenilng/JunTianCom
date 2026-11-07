@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { NConfigProvider, NInput } from "naive-ui";
+import { adminThemeOverrides, useAdminTheme } from "../lib/naive";
+
+const { nTheme } = useAdminTheme();
 
 interface TimelineItem {
   year: string;
@@ -63,60 +67,62 @@ async function save() {
 </script>
 
 <template>
-  <div class="card">
-    <h2>基本信息（头部 / 关于页 / SEO 默认值）</h2>
-    <div class="settings-grid">
-      <div v-for="[key, label] in ID_FIELDS" :key="key" :class="{ full: ['url', 'title', 'description', 'role'].includes(key) }">
-        <label>{{ label }}（{{ key }}）</label>
-        <input v-model="identity[key]" />
+  <n-config-provider :theme="nTheme" :theme-overrides="adminThemeOverrides">
+    <div class="card">
+      <h2>基本信息（头部 / 关于页 / SEO 默认值）</h2>
+      <div class="settings-grid">
+        <div v-for="[key, label] in ID_FIELDS" :key="key" :class="{ full: ['url', 'title', 'description', 'role'].includes(key) }">
+          <label>{{ label }}（{{ key }}）</label>
+          <n-input v-model:value="identity[key]" />
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h2>技能栈（关于页，每行一个）</h2>
-    <div class="admin-form-narrow">
-      <textarea v-model="skills" rows="6"></textarea>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>时间线（关于页）</h2>
-    <div v-for="(t, i) in timeline" :key="i" class="card" style="margin-bottom: 10px; padding: 12px 14px">
-      <div class="row">
-        <input v-model="t.year" placeholder="年份" style="width: 160px" />
-        <input v-model="t.title" placeholder="标题" style="flex: 1" />
-        <button class="btn small ghost" type="button" @click="timeline.splice(i, 1)">移除</button>
+    <div class="card">
+      <h2>技能栈（关于页，每行一个）</h2>
+      <div class="admin-form-narrow">
+        <n-input v-model:value="skills" type="textarea" :rows="6" />
       </div>
-      <textarea v-model="t.desc" rows="2" style="margin-top: 6px" placeholder="一句话描述"></textarea>
     </div>
-    <button class="btn small ghost" type="button" @click="timeline.push({ year: '', title: '', desc: '' })">
-      + 新增时间线
-    </button>
-  </div>
 
-  <div class="card">
-    <h2>合作方式（关于页）</h2>
-    <div v-for="(c, i) in coops" :key="i" class="card" style="margin-bottom: 10px; padding: 12px 14px">
-      <div class="row">
-        <input v-model="c.icon" placeholder="icon（lucide）" style="width: 180px" />
-        <input v-model="c.title" placeholder="标题" style="flex: 1" />
-        <button class="btn small ghost" type="button" @click="coops.splice(i, 1)">移除</button>
+    <div class="card">
+      <h2>时间线（关于页）</h2>
+      <div v-for="(t, i) in timeline" :key="i" class="card" style="margin-bottom: 10px; padding: 12px 14px">
+        <div class="row">
+          <n-input v-model:value="t.year" placeholder="年份" style="width: 170px" />
+          <n-input v-model:value="t.title" placeholder="标题" style="flex: 1" />
+          <button class="btn small ghost" type="button" @click="timeline.splice(i, 1)">移除</button>
+        </div>
+        <n-input v-model:value="t.desc" type="textarea" :rows="2" style="margin-top: 8px" placeholder="一句话描述" />
       </div>
-      <textarea v-model="c.desc" rows="2" style="margin-top: 6px" placeholder="描述"></textarea>
+      <button class="btn small ghost" type="button" @click="timeline.push({ year: '', title: '', desc: '' })">
+        + 新增时间线
+      </button>
     </div>
-    <button
-      class="btn small ghost"
-      type="button"
-      @click="coops.push({ icon: 'message-circle', title: '', desc: '' })"
-    >
-      + 新增合作方式
-    </button>
-  </div>
 
-  <p>
-    <button class="btn" type="button" @click="save">保存全部</button>
-    <span class="muted" style="margin-left: 10px">保存后头部/关于页即时更新</span>
-  </p>
-  <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+    <div class="card">
+      <h2>合作方式（关于页）</h2>
+      <div v-for="(c, i) in coops" :key="i" class="card" style="margin-bottom: 10px; padding: 12px 14px">
+        <div class="row">
+          <n-input v-model:value="c.icon" placeholder="icon（lucide）" style="width: 190px" />
+          <n-input v-model:value="c.title" placeholder="标题" style="flex: 1" />
+          <button class="btn small ghost" type="button" @click="coops.splice(i, 1)">移除</button>
+        </div>
+        <n-input v-model:value="c.desc" type="textarea" :rows="2" style="margin-top: 8px" placeholder="描述" />
+      </div>
+      <button
+        class="btn small ghost"
+        type="button"
+        @click="coops.push({ icon: 'message-circle', title: '', desc: '' })"
+      >
+        + 新增合作方式
+      </button>
+    </div>
+
+    <p>
+      <button class="btn" type="button" @click="save">保存全部</button>
+      <span class="muted" style="margin-left: 10px">保存后头部/关于页即时更新</span>
+    </p>
+    <p class="msg" :class="{ show: msg, ok: msgOk, err: !msgOk }">{{ msg }}</p>
+  </n-config-provider>
 </template>
