@@ -4,7 +4,12 @@
    仅 src/admin/ 使用；类名与岛组件保持兼容（card/btn/tag...）
    ============================================================ */
 
+/* 后台不加载官网 global.css,补最小 reset:
+   没有 border-box 时,width:100% + padding 的输入框会溢出容器(压在一起) */
+*, *::before, *::after { box-sizing: border-box; }
+
 body.admin {
+  margin: 0;
   --adm-bg: #0a0e16;
   --adm-panel: #0d1422;
   --adm-card: rgba(16, 24, 39, 0.92);
