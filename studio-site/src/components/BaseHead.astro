@@ -54,7 +54,7 @@ const cfBeaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN;
   jsonld && (
     <script
       type="application/ld+json"
-      set:html={JSON.stringify(jsonld)}
+      set:html={JSON.stringify(jsonld).replace(/</g, "\\u003c")}
     />
   )
 }

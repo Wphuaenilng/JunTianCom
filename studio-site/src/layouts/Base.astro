@@ -70,7 +70,8 @@ const props = Astro.props;
 </html>
 
 <script>
-  // —— 导航高度 + 滚动形态(header 已持久化,只绑定一次) ——
+  // —— 导航高度 + 滚动形态(header 每次换页重建,窗口级 scroll 监听需防叠加) ——
+  let navScrollHandler: (() => void) | null = null;
   function initNav() {
     const nav = document.querySelector(".site-nav");
     if (!nav || (nav as HTMLElement).dataset.navBound) return;
@@ -84,11 +85,12 @@ const props = Astro.props;
     new ResizeObserver(setNavHeight).observe(nav);
 
     // deepseek 式导航：下滑后变形为悬浮胶囊，回顶部恢复完整长条
-    const onNavScroll = () => {
+    if (navScrollHandler) window.removeEventListener("scroll", navScrollHandler);
+    navScrollHandler = () => {
       nav.classList.toggle("nav-condensed", window.scrollY > 80);
     };
-    window.addEventListener("scroll", onNavScroll, { passive: true });
-    onNavScroll();
+    window.addEventListener("scroll", navScrollHandler, { passive: true });
+    navScrollHandler();
   }
 
   // —— 滚动渐显：swap 后新页面的 .reveal 元素需要重新观察 ——
@@ -113,6 +115,14 @@ const props = Astro.props;
       { threshold: 0.1, rootMargin: "0px 0px -6% 0px" },
     );
     for (const el of revealEls) revealIO.observe(el);
+    // 兜底:后台标签节流或 VT 中断可能让 IO 停摆,1.2s 后强制显示视口内
+    // 仍未渐显的元素——保证内容永不因观察器失效而被隐藏
+    setTimeout(() => {
+      document.querySelectorAll<HTMLElement>(".reveal:not(.revealed)").forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < innerHeight && rect.bottom > 0) el.classList.add("revealed");
+      });
+    }, 1200);
   }
 
   // —— 导航高亮：header 持久化后按当前路径重算(与 Header.astro 的 isActive 同逻辑) ——
